@@ -96,7 +96,14 @@ function Players:GetName(unit)
     if not unit then return "Unknown" end
 
     local name = UnitName(unit)
-    return name or "Unknown"
+    if not name then return "Unknown" end
+
+    -- Add (You) to the player's own character name
+    if UnitIsUnit(unit, "player") then
+        name = name .. " (You)"
+    end
+
+    return name
 end
 
 -- Get player class
