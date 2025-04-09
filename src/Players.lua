@@ -117,9 +117,6 @@ function Players:GetItemLevel(unit)
     else
         -- Request inspect if possible
         if CanInspect(unit) and (not InspectFrame or (InspectFrame and not InspectFrame:IsShown())) then
-            -- We'll need to implement a proper inspect system with callbacks
-            -- For now, just return a placeholder value
-
             -- Queue this unit for inspection
             self:QueueInspect(unit)
 

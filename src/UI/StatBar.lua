@@ -64,7 +64,7 @@ function StatBar:CreateFrame(parent)
 	bg:SetBackdropBorderColor(0, 0, 0, PIL.Config.barBgAlpha)
 	frame.bg = bg
 
-	-- Create the status bar with explicit name to help with debugging
+	-- Create the status bar
 	local bar = CreateFrame("StatusBar", "PIL_StatBar_" .. self.statType, bg)
 	bar:SetPoint("TOPLEFT", bg, "TOPLEFT", 1, -1)
 	bar:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -1, 1)
@@ -297,20 +297,8 @@ function StatBar:UpdateBackgroundOpacity()
 	self.frame.bg:SetBackdropBorderColor(0, 0, 0, PIL.Config.barBgAlpha)
 end
 
--- Empty functions for tooltip functionality that has been removed
-function StatBar:ShowTooltip(frame)
-	-- Tooltip functionality has been removed
-end
-
--- Hides the tooltip
-function StatBar:HideTooltip()
-	-- Tooltip functionality has been removed
-end
-
--- Sets up the tooltip for the stat bar
+-- Sets up the tooltip for the stat bar (placeholder for future implementation)
 function StatBar:InitTooltip()
-	-- Tooltip functionality has been removed
-
 	-- Clear any existing scripts
 	self.frame:SetScript("OnEnter", nil)
 	self.frame:SetScript("OnLeave", nil)

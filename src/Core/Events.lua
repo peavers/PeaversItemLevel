@@ -5,12 +5,11 @@ local updateTimer = 0
 local inCombat = false
 
 -- Handles WoW events to update the addon state
--- Let's also modify the OnEvent function in Events.lua to handle player name updates
 function Core:OnEvent(event, ...)
 	if event == "GROUP_ROSTER_UPDATE" then
 		-- Group composition changed, rescan group
 		PIL.Players:ScanGroup()
-		-- Use the new function that handles sorting properly
+		-- Update bars with proper sorting
 		PIL.BarManager:UpdateBarsWithSorting()
 		-- Update frame visibility based on new group state
 		self:UpdateFrameVisibility()
