@@ -82,6 +82,13 @@ function Players:ScanGroup()
             return UnitName(a) < UnitName(b)
         end)
     end
+
+    -- Queue all players for inspection to ensure item levels are updated
+    for _, unit in ipairs(self.PLAYER_ORDER) do
+        if not UnitIsUnit(unit, "player") and CanInspect(unit) then
+            self:QueueInspect(unit)
+        end
+    end
 end
 
 -- Get player name
