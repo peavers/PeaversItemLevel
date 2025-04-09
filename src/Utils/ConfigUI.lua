@@ -227,14 +227,14 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	yPos = yPos - 55
 
-	-- Add a thin separator
+	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- Increased spacing after separator
 
 	-- Create a container for layout settings
 	local layoutLabel, newY = UI:CreateLabel(content, "Layout:", controlIndent, yPos, "GameFontNormalSmall")
 	layoutLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly increased spacing
 
 	-- Group by role checkbox
 	local groupByRoleCheckbox, newY = UI:CreateCheckbox(
@@ -254,16 +254,16 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 			end
 		end
 	)
-	yPos = newY - 10
+	yPos = newY - 12  -- Increased spacing
 
 	-- Add a thin separator
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- Increased spacing after separator
 
 	-- Create a container for appearance settings
 	local appearanceLabel, newY = UI:CreateLabel(content, "Appearance:", controlIndent, yPos, "GameFontNormalSmall")
 	appearanceLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly increased spacing
 
 	-- Bar background opacity slider
 	local barBgOpacityContainer = CreateFrame("Frame", nil, content)
@@ -311,14 +311,14 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	yPos = yPos - 55
 
-	-- Add a thin separator
+	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- Increased spacing after separator
 
 	-- Create a container for item level step settings
 	local ilvlStepLabel, newY = UI:CreateLabel(content, "Item Level Progress:", controlIndent, yPos, "GameFontNormalSmall")
 	ilvlStepLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly increased spacing
 
 	-- Item level step percentage slider
 	local ilvlStepContainer = CreateFrame("Frame", nil, content)
@@ -365,18 +365,23 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 		end
 	end)
 
-	-- Add explanation for Item Level Step Percentage
+	-- The problematic step explanation - moved it further down with proper spacing
+	yPos = yPos - 55  -- Space after the slider
+
+	-- Add explanation for Item Level Step Percentage with proper spacing and width
 	local ilvlStepExplanation = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-	ilvlStepExplanation:SetPoint("TOPLEFT", controlIndent, yPos - 30)
-	ilvlStepExplanation:SetWidth(sliderWidth)
+	ilvlStepExplanation:SetPoint("TOPLEFT", controlIndent, yPos)
+	ilvlStepExplanation:SetWidth(sliderWidth)  -- Use the same width as the slider
 	ilvlStepExplanation:SetJustifyH("LEFT")
 	ilvlStepExplanation:SetText("Controls how much of the progress bar is filled based on item level differences. " ..
 		"Higher values make the bars more sensitive to small item level differences, " ..
 		"Lower values make the bars more gradual")
 
-	yPos = yPos - 85
+	-- Calculate the height of the explanation text (approximately 3 lines)
+	local explanationHeight = 40  -- Estimated height for 3 lines of text
+	yPos = yPos - explanationHeight - 15  -- Add extra padding after the explanation
 
-	-- Sort options dropdown container
+	-- Sort options dropdown container with more space
 	local sortContainer = CreateFrame("Frame", nil, content)
 	sortContainer:SetSize(400, 60)
 	sortContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
@@ -421,12 +426,12 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 	end)
 
 	local newY = yPos - 65
-	yPos = newY - 10
+	yPos = newY - 10  -- Added extra spacing after dropdown
 
 	return yPos
 end
 
--- Creates visual settings
+-- Creates visual settings with improved spacing
 function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing)
 	baseSpacing = baseSpacing or 25
 	sectionSpacing = sectionSpacing or 40
@@ -436,12 +441,12 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 	-- Visual Settings section header
 	local header, newY = UI:CreateSectionHeader(content, "Visual Settings", baseSpacing, yPos)
 	header:SetFont(header:GetFont(), 18)
-	yPos = newY - 10
+	yPos = newY - 12  -- Slightly more spacing
 
 	-- Group 1: Layout controls
 	local layoutLabel, newY = UI:CreateLabel(content, "Layout Options:", controlIndent, yPos, "GameFontNormalSmall")
 	layoutLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly more spacing
 
 	-- Show title bar checkbox
 	local titleBarCheckbox, newY = UI:CreateCheckbox(
@@ -460,7 +465,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 			end
 		end
 	)
-	yPos = newY
+	yPos = newY - 3  -- Small spacing between checkboxes
 
 	-- Lock position checkbox
 	local lockPositionCheckbox, newY = UI:CreateCheckbox(
@@ -479,7 +484,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 			end
 		end
 	)
-	yPos = newY
+	yPos = newY - 3  -- Small spacing between checkboxes
 
 	-- Hide out of combat checkbox
 	local hideOutOfCombatCheckbox, newY = UI:CreateCheckbox(
@@ -504,7 +509,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 			end
 		end
 	)
-	yPos = newY - 10
+	yPos = newY - 12  -- Extra spacing before dropdown
 
 	-- Display mode dropdown container
 	local displayModeContainer = CreateFrame("Frame", nil, content)
@@ -546,16 +551,16 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 		end
 	end)
 
-	yPos = yPos - 65
+	yPos = yPos - 65 - 10  -- Extra space after dropdown
 
-	-- Add a thin separator
+	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- More space after separator
 
 	-- Group 2: Background settings
 	local bgLabel, newY = UI:CreateLabel(content, "Background:", controlIndent, yPos, "GameFontNormalSmall")
 	bgLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly more spacing
 
 	-- Background opacity slider
 	local opacityContainer = CreateFrame("Frame", nil, content)
@@ -616,16 +621,16 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 		end
 	end)
 
-	yPos = yPos - 55
+	yPos = yPos - 55 - 10  -- Extra space after slider
 
-	-- Add a thin separator
+	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- More space after separator
 
 	-- Group 3: Font selection
 	local textStyleLabel, newY = UI:CreateLabel(content, "Text Style:", controlIndent, yPos, "GameFontNormalSmall")
 	textStyleLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly more spacing
 
 	-- Font dropdown container
 	local fontContainer = CreateFrame("Frame", nil, content)
@@ -662,7 +667,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 		end
 	end)
 
-	yPos = yPos - 65
+	yPos = yPos - 65 - 5  -- Extra space after dropdown
 
 	-- Font outline checkbox
 	local outlineCheckbox, newY = UI:CreateCheckbox(
@@ -682,7 +687,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 			end
 		end
 	)
-	yPos = newY - 10
+	yPos = newY - 3  -- Small spacing between checkboxes
 
 	-- Font shadow checkbox
 	local shadowCheckbox, newY = UI:CreateCheckbox(
@@ -702,7 +707,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 			end
 		end
 	)
-	yPos = newY - 10
+	yPos = newY - 12  -- More space before slider
 
 	-- Font size slider
 	local fontSizeContainer = CreateFrame("Frame", nil, content)
@@ -749,16 +754,16 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 		end
 	end)
 
-	yPos = yPos - 65
+	yPos = yPos - 55 - 10  -- Extra space after slider
 
-	-- Add a thin separator
+	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 10
+	yPos = newY - 15  -- More space after separator
 
 	-- Group 4: Bar texture
 	local barAppLabel, newY = UI:CreateLabel(content, "Bar Appearance:", controlIndent, yPos, "GameFontNormalSmall")
 	barAppLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
+	yPos = newY - 8  -- Slightly more spacing
 
 	-- Texture dropdown container
 	local textureContainer = CreateFrame("Frame", nil, content)
@@ -794,7 +799,7 @@ function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing
 		end
 	end)
 
-	yPos = yPos - 65
+	yPos = yPos - 65 - 10  -- Extra space after dropdown
 
 	return yPos
 end
