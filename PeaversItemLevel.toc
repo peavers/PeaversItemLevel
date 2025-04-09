@@ -5,8 +5,8 @@
 ## IconTexture: Interface\AddOns\PeaversItemLevel\src\Media\Icon.tga
 
 ## Author: Peavers
-## Version: 1.0.31
-## X-Curse-Project-ID: 1230220
+## Version: 1.0.0
+## X-Curse-Project-ID: 1239246
 
 ## SavedVariables: PeaversItemLevelDB
 

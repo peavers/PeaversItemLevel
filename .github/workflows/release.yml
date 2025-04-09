@@ -23,7 +23,7 @@ jobs:
       - name: Get current version and increment
         id: get_version
         run: |
-          CURRENT_VERSION=$(grep -oP '(?<=## Version: ).*' PeaversDynamicStats.toc)
+          CURRENT_VERSION=$(grep -oP '(?<=## Version: ).*' PeaversItemLevel.toc)
           echo "Current version: $CURRENT_VERSION"
           IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
           MAJOR="${VERSION_PARTS[0]}"
@@ -36,20 +36,20 @@ jobs:
 
       - name: Update TOC version
         run: |
-          sed -i "s/^## Version: .*$/## Version: ${{ steps.get_version.outputs.new_version }}/" PeaversDynamicStats.toc
+          sed -i "s/^## Version: .*$/## Version: ${{ steps.get_version.outputs.new_version }}/" PeaversItemLevel.toc
 
       - name: Commit TOC changes
         run: |
           git config user.name "Chris Turner"
           git config user.email "peavers@gmail.com"
-          git add PeaversDynamicStats.toc
+          git add PeaversItemLevel.toc
           git commit -m "chore: Update TOC version to ${{ steps.get_version.outputs.new_version }}"
           git push
 
       - name: Create and push tag
         id: create_tag
         run: |
-          NEW_TAG="PeaversDynamicStats-${{ steps.get_version.outputs.new_version }}"
+          NEW_TAG="PeaversItemLevel-${{ steps.get_version.outputs.new_version }}"
           git tag $NEW_TAG
           git push origin $NEW_TAG
           echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
@@ -59,5 +59,5 @@ jobs:
           curl -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-          https://api.github.com/repos/peavers/PeaversDynamicStats/actions/workflows/packaging.yml/dispatches \
+          https://api.github.com/repos/peavers/PeaversItemLevel/actions/workflows/packaging.yml/dispatches \
           -d '{"ref":"master"}'

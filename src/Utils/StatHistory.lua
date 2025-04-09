@@ -101,17 +101,17 @@ end
 
 -- Save history data to the SavedVariables database
 function StatHistory:Save()
-    if not PeaversDynamicStatsDB then
-        PeaversDynamicStatsDB = {}
+    if not PeaversItemLevelDB then
+        PeaversItemLevelDB = {}
     end
 
-    PeaversDynamicStatsDB.statHistory = self.data
+    PeaversItemLevelDB.statHistory = self.data
 end
 
 -- Load history data from the SavedVariables database
 function StatHistory:Load()
-    if PeaversDynamicStatsDB and PeaversDynamicStatsDB.statHistory then
-        self.data = PeaversDynamicStatsDB.statHistory
+    if PeaversItemLevelDB and PeaversItemLevelDB.statHistory then
+        self.data = PeaversItemLevelDB.statHistory
     end
 end
 

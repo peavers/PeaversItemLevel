@@ -10,7 +10,7 @@ SlashCmdList["PEAVERSDYNAMICSTATS"] = function(msg)
 			PDS.Config.OpenOptionsCommand()
 		else
  		-- Open category using the latest API
- 		Settings.OpenToCategory("PeaversDynamicStats")
+ 		Settings.OpenToCategory("PeaversItemLevel")
 		end
 	else
 		-- Toggle main frame visibility
