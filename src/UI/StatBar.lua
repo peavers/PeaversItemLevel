@@ -25,6 +25,9 @@ function StatBar:New(parent, name, statType)
 	obj:InitAnimationSystem()
 	obj:InitTooltip()
 
+	-- Call UpdateNameText to handle initial truncation
+	obj:UpdateNameText()
+
 	return obj
 end
 
@@ -118,7 +121,6 @@ function StatBar:CreateFrame(parent)
 		nameText:SetShadowOffset(0, 0)
 	end
 	frame.nameText = nameText
-
 
 	-- Store the text layer for future reference
 	frame.textLayer = textLayer
@@ -260,6 +262,9 @@ function StatBar:UpdateFont()
 		self.frame.valueText:SetShadowOffset(0, 0)
 		self.frame.nameText:SetShadowOffset(0, 0)
 	end
+
+	-- Update name text to handle truncation after font changes
+	self:UpdateNameText()
 end
 
 -- Updates the texture used for the status bar
@@ -293,6 +298,41 @@ function StatBar:UpdateWidth()
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOPLEFT", self.frame:GetParent(), "TOPLEFT", 0, self.yOffset)
 	self.frame:SetPoint("TOPRIGHT", self.frame:GetParent(), "TOPRIGHT", 0, self.yOffset)
+
+	-- Update name text to handle truncation
+	self:UpdateNameText()
+end
+
+-- Updates the name text, truncating if necessary
+function StatBar:UpdateNameText()
+	if not self.frame or not self.frame.nameText then return end
+
+	-- Get the available width for the name text
+	local barWidth = PIL.Config.barWidth
+	local valueTextWidth = self.frame.valueText:GetStringWidth() + 8 -- Add some padding
+	local availableWidth = barWidth - valueTextWidth - 8 -- Subtract padding for the name text
+
+	-- If the name is too long, truncate it
+	local fullName = self.name
+	local nameWidth = self.frame.nameText:GetStringWidth()
+
+	if nameWidth > availableWidth and availableWidth > 0 then
+		-- Truncate the name and add "..."
+		local truncatedName = fullName
+		local ellipsis = "..."
+		local ellipsisWidth = self.frame.nameText:GetStringWidth(ellipsis)
+
+		-- Start with the full name and gradually reduce it until it fits
+		while self.frame.nameText:GetStringWidth(truncatedName .. ellipsis) > availableWidth and #truncatedName > 0 do
+			truncatedName = string.sub(truncatedName, 1, #truncatedName - 1)
+		end
+
+		-- Set the truncated name with ellipsis
+		self.frame.nameText:SetText(truncatedName .. ellipsis)
+	else
+		-- Name fits, use the full name
+		self.frame.nameText:SetText(fullName)
+	end
 end
 
 -- Updates the background opacity of the bar

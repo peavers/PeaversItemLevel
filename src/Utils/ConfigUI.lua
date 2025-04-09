@@ -189,7 +189,7 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 	local widthSlider = CreateFrame("Slider", "PeaversWidthSlider", widthContainer, "OptionsSliderTemplate")
 	widthSlider:SetPoint("TOPLEFT", 0, -20)
 	widthSlider:SetWidth(sliderWidth)
-	widthSlider:SetMinMaxValues(150, 400)
+	widthSlider:SetMinMaxValues(50, 400)
 	widthSlider:SetValueStep(10)
 	widthSlider:SetValue(Config.frameWidth)
 

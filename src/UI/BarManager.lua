@@ -229,6 +229,8 @@ function BarManager:UpdateAllBars(forceUpdate, noAnimation)
 		if bar.name ~= playerName then
 			bar.name = playerName
 			bar.frame.nameText:SetText(playerName)
+			-- Call UpdateNameText to handle truncation after updating the name
+			bar:UpdateNameText()
 		end
 	end
 
@@ -393,6 +395,8 @@ function BarManager:UpdateBarsWithSorting(forceUpdate)
 				if bar.name ~= playerName then
 					bar.name = playerName
 					bar.frame.nameText:SetText(playerName)
+					-- Call UpdateNameText to handle truncation after updating the name
+					bar:UpdateNameText()
 				end
 
 				-- Add this bar back to our collection in the correct order
