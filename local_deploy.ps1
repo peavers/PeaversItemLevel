@@ -1,10 +1,14 @@
-$wowAddonPath = "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\PeaversItemSquare"
-
 # Get the current directory
 $currentDir = Get-Location
+$currentDirPath = $currentDir.Path
+
+# Extract the folder name from the current path
+$folderName = Split-Path -Path $currentDirPath -Leaf
+
+# Construct the WoW addon path using the folder name
+$wowAddonPath = "C:\Program Files (x86)\World of Warcraft\_retail_\Interface\AddOns\$folderName"
 
 # Ensure paths don't have quotes which can cause issues with robocopy
-$currentDirPath = $currentDir.Path
 $wowAddonPathNormalized = $wowAddonPath
 
 # Create the destination directory if it doesn't exist
@@ -17,3 +21,4 @@ $result = robocopy $currentDirPath $wowAddonPathNormalized /MIR /FFT /Z /W:1 /R:
 
 # Display completion message
 Write-Host "Directories synchronized successfully. Target directory now mirrors the source."
+Write-Host "Addon deployed to: $wowAddonPathNormalized"
