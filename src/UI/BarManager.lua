@@ -349,113 +349,108 @@ end
 
 -- Updates bars with proper sorting
 -- This function will either update the existing bars or recreate them
--- depending on whether sorting by item level is enabled
+-- depending on the current configuration
 function BarManager:UpdateBarsWithSorting(forceUpdate)
-	-- If sorting by item level or grouping by role is enabled, we need to ensure proper order
-	if PIL.Config.sortOption == "ILVL_DESC" or PIL.Config.sortOption == "ILVL_ASC" or PIL.Config.groupByRole then
-		-- Resort the players
-		PIL.Players:ScanGroup()
+	-- Always ensure proper order regardless of sort option
+	-- Resort the players
+	PIL.Players:ScanGroup()
 
-		-- Check if we have any "Unknown" names that need updating
-		local hasUnknownPlayers = false
-		for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
-			local playerName = PIL.Players:GetName(unit)
-			if playerName == "Unknown" then
-				hasUnknownPlayers = true
-				break
-			end
+	-- Check if we have any "Unknown" names that need updating
+	local hasUnknownPlayers = false
+	for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
+		local playerName = PIL.Players:GetName(unit)
+		if playerName == "Unknown" then
+			hasUnknownPlayers = true
+			break
 		end
+	end
 
-		-- If we have unknown players or no bars yet, do a full rebuild
-		if hasUnknownPlayers or #self.bars == 0 or forceUpdate or PIL.Config.groupByRole then
-			if PIL.Core and PIL.Core.contentFrame then
-				self:CreateBars(PIL.Core.contentFrame)
-				PIL.Core:AdjustFrameHeight()
-			end
-			return
-		end
-
-		-- Create a temporary mapping of unit to bar
-		local barsByUnit = {}
-		for _, bar in ipairs(self.bars) do
-			barsByUnit[bar.statType] = bar
-		end
-
-		-- Clear the bar collection but don't destroy the actual bar frames
-		local oldBars = self.bars
-		self.bars = {}
-
-		-- Reposition bars according to new player order
-		local yOffset = 0
-		for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
-			local bar = barsByUnit[unit]
-			if bar then
-				-- Update the name in case it changed
-				local playerName = PIL.Players:GetName(unit)
-				if bar.name ~= playerName then
-					bar.name = playerName
-					bar.frame.nameText:SetText(playerName)
-					-- Call UpdateNameText to handle truncation after updating the name
-					bar:UpdateNameText()
-				end
-
-				-- Add this bar back to our collection in the correct order
-				table.insert(self.bars, bar)
-
-				-- Position bar at the correct offset
-				bar:SetPosition(0, yOffset)
-
-				-- Update value without animation during sorting
-				local itemLevel = PIL.Players:GetItemLevel(unit)
-				bar:Update(itemLevel, nil, nil, true) -- noAnimation = true
-
-				-- Ensure the color is properly applied
-				bar:UpdateColor()
-
-				-- When barSpacing is 0, position bars exactly barHeight pixels apart
-				if PIL.Config.barSpacing == 0 then
-					yOffset = yOffset - PIL.Config.barHeight
-				else
-					yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
-				end
-			else
-				-- Create a new bar for this unit
-				local playerName = PIL.Players:GetName(unit)
-				local newBar = PIL.StatBar:New(PIL.Core.contentFrame, playerName, unit)
-				newBar:SetPosition(0, yOffset)
-
-				local itemLevel = PIL.Players:GetItemLevel(unit)
-				-- Pass true for noAnimation to prevent flashing
-				newBar:Update(itemLevel, nil, nil, true)
-
-				-- Ensure the color is properly applied
-				newBar:UpdateColor()
-
-				table.insert(self.bars, newBar)
-
-				-- When barSpacing is 0, position bars exactly barHeight pixels apart
-				if PIL.Config.barSpacing == 0 then
-					yOffset = yOffset - PIL.Config.barHeight
-				else
-					yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
-				end
-			end
-		end
-
-		-- Hide any bars that aren't in the current player list
-		for _, bar in ipairs(oldBars) do
-			if not tContains(PIL.Players.PLAYER_ORDER, bar.statType) then
-				bar.frame:Hide()
-			end
-		end
-
-		-- Adjust the frame height after reordering
-		if PIL.Core then
+	-- If we have unknown players or no bars yet, do a full rebuild
+	if hasUnknownPlayers or #self.bars == 0 or forceUpdate or PIL.Config.groupByRole then
+		if PIL.Core and PIL.Core.contentFrame then
+			self:CreateBars(PIL.Core.contentFrame)
 			PIL.Core:AdjustFrameHeight()
 		end
-	else
-		-- Just update the bars if not sorting by item level
-		self:UpdateAllBars(forceUpdate, true) -- true for noAnimation
+		return
+	end
+
+	-- Create a temporary mapping of unit to bar
+	local barsByUnit = {}
+	for _, bar in ipairs(self.bars) do
+		barsByUnit[bar.statType] = bar
+	end
+
+	-- Clear the bar collection but don't destroy the actual bar frames
+	local oldBars = self.bars
+	self.bars = {}
+
+	-- Reposition bars according to new player order
+	local yOffset = 0
+	for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
+		local bar = barsByUnit[unit]
+		if bar then
+			-- Update the name in case it changed
+			local playerName = PIL.Players:GetName(unit)
+			if bar.name ~= playerName then
+				bar.name = playerName
+				bar.frame.nameText:SetText(playerName)
+				-- Call UpdateNameText to handle truncation after updating the name
+				bar:UpdateNameText()
+			end
+
+			-- Add this bar back to our collection in the correct order
+			table.insert(self.bars, bar)
+
+			-- Position bar at the correct offset
+			bar:SetPosition(0, yOffset)
+
+			-- Update value without animation during sorting
+			local itemLevel = PIL.Players:GetItemLevel(unit)
+			bar:Update(itemLevel, nil, nil, true) -- noAnimation = true
+
+			-- Ensure the color is properly applied
+			bar:UpdateColor()
+
+			-- When barSpacing is 0, position bars exactly barHeight pixels apart
+			if PIL.Config.barSpacing == 0 then
+				yOffset = yOffset - PIL.Config.barHeight
+			else
+				yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
+			end
+		else
+			-- Create a new bar for this unit
+			local playerName = PIL.Players:GetName(unit)
+			local newBar = PIL.StatBar:New(PIL.Core.contentFrame, playerName, unit)
+			newBar:SetPosition(0, yOffset)
+
+			local itemLevel = PIL.Players:GetItemLevel(unit)
+			-- Pass true for noAnimation to prevent flashing
+			newBar:Update(itemLevel, nil, nil, true)
+
+			-- Ensure the color is properly applied
+			newBar:UpdateColor()
+
+			table.insert(self.bars, newBar)
+
+			-- When barSpacing is 0, position bars exactly barHeight pixels apart
+			if PIL.Config.barSpacing == 0 then
+				yOffset = yOffset - PIL.Config.barHeight
+			else
+				yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
+			end
+		end
+	end
+
+	-- Hide any bars that aren't in the current player list
+	for _, bar in ipairs(oldBars) do
+		if not tContains(PIL.Players.PLAYER_ORDER, bar.statType) then
+			bar.frame:Hide()
+		end
+	end
+
+	-- Adjust the frame height after reordering
+	if PIL.Core then
+		PIL.Core:AdjustFrameHeight()
 	end
 end
 
