@@ -15,6 +15,7 @@ PIL.Config = {
 	barHeight = 20,
 	barSpacing = 2,
 	barBgAlpha = 0.7,
+	barAlpha = 1.0,
 
 	-- Visual settings
 	fontFace = "Fonts\\FRIZQT__.TTF",
@@ -67,6 +68,7 @@ function Config:Save()
 		barHeight = self.barHeight,
 		barTexture = self.barTexture,
 		barBgAlpha = self.barBgAlpha,
+		barAlpha = self.barAlpha,
 		bgAlpha = self.bgAlpha,
 		bgColor = self.bgColor,
 		showStats = self.showStats,
@@ -128,6 +130,9 @@ function Config:LoadSettings(source)
 	end
 	if source.barBgAlpha then
 		self.barBgAlpha = source.barBgAlpha
+	end
+	if source.barAlpha then
+		self.barAlpha = source.barAlpha
 	end
 	if source.bgAlpha then
 		self.bgAlpha = source.bgAlpha

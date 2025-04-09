@@ -83,7 +83,7 @@ function StatBar:CreateFrame(parent)
 	end
 
 	-- Set initial color
-	bar:SetStatusBarColor(0.8, 0.8, 0.8, 1)
+	bar:SetStatusBarColor(0.8, 0.8, 0.8, PIL.Config.barAlpha)
 
 	frame.bar = bar
 
@@ -98,7 +98,7 @@ function StatBar:CreateFrame(parent)
 	valueText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
 	valueText:SetJustifyH("RIGHT")
 	valueText:SetText("0")
-	valueText:SetTextColor(1, 1, 1)
+	valueText:SetTextColor(1, 1, 1, PIL.Config.barAlpha)
 	if PIL.Config.fontShadow then
 		valueText:SetShadowOffset(1, -1)
 	else
@@ -111,7 +111,7 @@ function StatBar:CreateFrame(parent)
 	nameText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
 	nameText:SetJustifyH("LEFT")
 	nameText:SetText(self.name)
-	nameText:SetTextColor(1, 1, 1)
+	nameText:SetTextColor(1, 1, 1, PIL.Config.barAlpha)
 	if PIL.Config.fontShadow then
 		nameText:SetShadowOffset(1, -1)
 	else
@@ -216,7 +216,7 @@ function StatBar:UpdateColor()
 
 	-- Apply the color to the status bar - set color directly without recreating texture
 	if self.frame and self.frame.bar then
-		self.frame.bar:SetStatusBarColor(r, g, b, 1)
+		self.frame.bar:SetStatusBarColor(r, g, b, PIL.Config.barAlpha)
 	end
 end
 
@@ -247,6 +247,10 @@ end
 function StatBar:UpdateFont()
 	self.frame.valueText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
 	self.frame.nameText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
+
+	-- Apply the same opacity as the bar to the text
+	self.frame.valueText:SetTextColor(1, 1, 1, PIL.Config.barAlpha)
+	self.frame.nameText:SetTextColor(1, 1, 1, PIL.Config.barAlpha)
 
 	-- Apply shadow if enabled
 	if PIL.Config.fontShadow then

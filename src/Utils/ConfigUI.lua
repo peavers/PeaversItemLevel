@@ -311,6 +311,53 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	yPos = yPos - 55
 
+	-- Bar opacity slider
+	local barOpacityContainer = CreateFrame("Frame", nil, content)
+	barOpacityContainer:SetSize(sliderWidth, 50)
+	barOpacityContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local barOpacityLabel = barOpacityContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	barOpacityLabel:SetPoint("TOPLEFT", 0, 0)
+	barOpacityLabel:SetText("Bar Opacity: " .. math.floor(Config.barAlpha * 100) .. "%")
+
+	local barOpacitySlider = CreateFrame("Slider", "PeaversBarOpacitySlider", barOpacityContainer, "OptionsSliderTemplate")
+	barOpacitySlider:SetPoint("TOPLEFT", 0, -20)
+	barOpacitySlider:SetWidth(sliderWidth)
+	barOpacitySlider:SetMinMaxValues(0, 1)
+	barOpacitySlider:SetValueStep(0.05)
+	barOpacitySlider:SetValue(Config.barAlpha)
+
+	-- Hide default slider text
+	local sliderName = barOpacitySlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	barOpacitySlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value * 20 + 0.5) / 20
+		barOpacityLabel:SetText("Bar Opacity: " .. math.floor(roundedValue * 100) .. "%")
+		Config.barAlpha = roundedValue
+		Config:Save()
+		if PIL.BarManager then
+			-- Update all bars to apply the new opacity
+			PIL.BarManager:UpdateBarsWithSorting(true)
+		end
+	end)
+
+	yPos = yPos - 55
+
 	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
 	yPos = newY - 15  -- Increased spacing after separator
