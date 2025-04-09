@@ -12,6 +12,8 @@ function Core:OnEvent(event, ...)
 		PIL.Players:ScanGroup()
 		-- Use the new function that handles sorting properly
 		PIL.BarManager:UpdateBarsWithSorting()
+		-- Update frame visibility based on new group state
+		self:UpdateFrameVisibility()
 	elseif event == "UNIT_NAME_UPDATE" then
 		-- A unit's name was updated, update the display
 		local unit = ...
@@ -29,16 +31,12 @@ function Core:OnEvent(event, ...)
 		PIL.BarManager:UpdateBarsWithSorting()
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		inCombat = true
-		-- Always show the frame when entering combat if hideOutOfCombat is enabled
-		if PIL.Config.hideOutOfCombat and not PIL.Core.frame:IsShown() then
-			PIL.Core.frame:Show()
-		end
+		-- Update frame visibility when entering combat
+		self:UpdateFrameVisibility()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		inCombat = false
-		-- Hide the frame when leaving combat if hideOutOfCombat is enabled
-		if PIL.Config.hideOutOfCombat and PIL.Core.frame:IsShown() then
-			PIL.Core.frame:Hide()
-		end
+		-- Update frame visibility when leaving combat
+		self:UpdateFrameVisibility()
 	end
 end
 

@@ -268,6 +268,44 @@ function Players:GetDisplayValue(unit)
 end
 
 
+-- Get player role
+function Players:GetRole(unit)
+    if not unit then return "DAMAGER" end
+
+    local role = UnitGroupRolesAssigned(unit)
+
+    -- If no role is assigned or it's "NONE", default to DAMAGER
+    if not role or role == "NONE" then
+        return "DAMAGER"
+    end
+
+    return role
+end
+
+-- Calculate average item level for a group of players
+function Players:CalculateAverageItemLevel(units)
+    if not units or #units == 0 then
+        return 0
+    end
+
+    local totalItemLevel = 0
+    local validPlayers = 0
+
+    for _, unit in ipairs(units) do
+        local itemLevel = self:GetItemLevel(unit)
+        if itemLevel and itemLevel > 0 then
+            totalItemLevel = totalItemLevel + itemLevel
+            validPlayers = validPlayers + 1
+        end
+    end
+
+    if validPlayers > 0 then
+        return totalItemLevel / validPlayers
+    else
+        return 0
+    end
+end
+
 -- Gets the highest item level in the group
 function Players:GetHighestItemLevel()
     local highestItemLevel = 0

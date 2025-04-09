@@ -37,19 +37,8 @@ function Core:Initialize()
 
 	self:UpdateFrameLock()
 
-	-- Determine initial visibility based on settings and combat state
-	local inCombat = InCombatLockdown()
-
-	if PIL.Config.showOnLogin then
-		if PIL.Config.hideOutOfCombat and not inCombat then
-			-- Hide if out of combat and hideOutOfCombat is enabled
-			self.frame:Hide()
-		else
-			self.frame:Show()
-		end
-	else
-		self.frame:Hide()
-	end
+ -- Determine initial visibility based on settings
+	self:UpdateFrameVisibility()
 end
 
 -- Registers all required events
@@ -117,6 +106,37 @@ function Core:UpdateTitleBarVisibility()
 		end
 
 		self:AdjustFrameHeight()
+	end
+end
+
+-- Updates frame visibility based on display mode and combat state
+function Core:UpdateFrameVisibility()
+	if not self.frame then return end
+
+	local inCombat = InCombatLockdown()
+	local isInParty = IsInGroup() and not IsInRaid()
+	local isInRaid = IsInRaid()
+	local shouldShow = false
+
+	-- First check if we should show based on display mode
+	if PIL.Config.displayMode == "ALWAYS" then
+		shouldShow = true
+	elseif PIL.Config.displayMode == "PARTY_ONLY" and isInParty then
+		shouldShow = true
+	elseif PIL.Config.displayMode == "RAID_ONLY" and isInRaid then
+		shouldShow = true
+	end
+
+	-- Then check if we should hide based on combat state
+	if shouldShow and PIL.Config.hideOutOfCombat and not inCombat then
+		shouldShow = false
+	end
+
+	-- Apply visibility
+	if shouldShow and PIL.Config.showOnLogin then
+		self.frame:Show()
+	else
+		self.frame:Hide()
 	end
 end
 

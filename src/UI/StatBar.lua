@@ -94,7 +94,7 @@ function StatBar:CreateFrame(parent)
 	textLayer:SetFrameLevel(bar:GetFrameLevel() + 1) -- Set higher than bar
 
 	local valueText = textLayer:CreateFontString(nil, "OVERLAY")
-	valueText:SetPoint("RIGHT", bar, "RIGHT", -6, 0)
+	valueText:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
 	valueText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
 	valueText:SetJustifyH("RIGHT")
 	valueText:SetText("0")
@@ -107,13 +107,11 @@ function StatBar:CreateFrame(parent)
 	frame.valueText = valueText
 
 	local nameText = textLayer:CreateFontString(nil, "OVERLAY")
-	nameText:SetPoint("LEFT", bar, "LEFT", 6, 0) -- Position name at the left of the bar
+	nameText:SetPoint("LEFT", bar, "LEFT", 4, 0) -- Position name at the left of the bar
 	nameText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
 	nameText:SetJustifyH("LEFT")
 	nameText:SetText(self.name)
 	nameText:SetTextColor(1, 1, 1)
-	-- Set a width limit to prevent overlap with value text
-	nameText:SetWidth(bar:GetWidth() - 60) -- Leave space for the value text
 	if PIL.Config.fontShadow then
 		nameText:SetShadowOffset(1, -1)
 	else

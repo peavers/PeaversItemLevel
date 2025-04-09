@@ -7,6 +7,87 @@ local BarManager = PIL.BarManager
 -- Collection to store all created bars
 BarManager.bars = {}
 
+-- Collection to store role headers
+BarManager.roleHeaders = {}
+
+-- Creates a role header with the same style as the titlebar
+function BarManager:CreateRoleHeader(parent, role, yOffset, avgItemLevel)
+    -- Hide existing header if it exists
+    if self.roleHeaders[role] then
+        self.roleHeaders[role].frame:Hide()
+    end
+
+    local header = {}
+
+    -- Create the frame
+    local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    frame:SetHeight(20)
+    frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, yOffset)
+    frame:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, yOffset)
+    frame:SetBackdrop({
+        bgFile = "Interface\\BUTTONS\\WHITE8X8",
+        edgeFile = "Interface\\BUTTONS\\WHITE8X8",
+        tile = true, tileSize = 16, edgeSize = 1,
+    })
+
+    frame:SetBackdropColor(PIL.Config.bgColor.r, PIL.Config.bgColor.g, PIL.Config.bgColor.b, PIL.Config.bgAlpha)
+    frame:SetBackdropBorderColor(0, 0, 0, PIL.Config.bgAlpha)
+
+    -- Create the title text
+    local title = frame:CreateFontString(nil, "OVERLAY")
+    title:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
+    title:SetPoint("LEFT", frame, "LEFT", 6, 0)
+
+    -- Set the title text based on the role
+    local roleText = "Unknown"
+    if role == "TANK" then
+        roleText = "Tanks"
+    elseif role == "HEALER" then
+        roleText = "Healers"
+    elseif role == "DAMAGER" then
+        roleText = "DPS"
+    end
+
+    title:SetText(roleText)
+    title:SetTextColor(1, 1, 1)
+    if PIL.Config.fontShadow then
+        title:SetShadowOffset(1, -1)
+    else
+        title:SetShadowOffset(0, 0)
+    end
+
+    -- Add vertical line separator
+    local verticalLine = frame:CreateTexture(nil, "ARTWORK")
+    verticalLine:SetSize(1, 16)
+    verticalLine:SetPoint("LEFT", title, "RIGHT", 5, 0)
+    verticalLine:SetColorTexture(0.3, 0.3, 0.3, 0.5)
+
+    -- Add average item level text
+    local avgIlvlText = frame:CreateFontString(nil, "OVERLAY")
+    avgIlvlText:SetFont(PIL.Config.fontFace, PIL.Config.fontSize, PIL.Config.fontOutline)
+    avgIlvlText:SetPoint("LEFT", verticalLine, "RIGHT", 5, 0)
+
+    -- Format the average item level to show only one decimal place
+    local formattedAvgIlvl = string.format("%.1f", avgItemLevel or 0)
+    avgIlvlText:SetText("avg " .. formattedAvgIlvl)
+    avgIlvlText:SetTextColor(0.8, 0.8, 0.8)
+    if PIL.Config.fontShadow then
+        avgIlvlText:SetShadowOffset(1, -1)
+    else
+        avgIlvlText:SetShadowOffset(0, 0)
+    end
+
+    header.frame = frame
+    header.title = title
+    header.avgIlvlText = avgIlvlText
+    header.role = role
+    header.yOffset = yOffset
+
+    self.roleHeaders[role] = header
+
+    return header
+end
+
 -- Creates or recreates all player bars
 function BarManager:CreateBars(parent)
     -- Clear existing bars
@@ -15,26 +96,95 @@ function BarManager:CreateBars(parent)
     end
     self.bars = {}
 
+    -- Clear existing role headers
+    for role, header in pairs(self.roleHeaders) do
+        header.frame:Hide()
+    end
+    self.roleHeaders = {}
+
     local yOffset = 0
-    for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
-        local playerName = PIL.Players:GetName(unit)
-        local bar = PIL.StatBar:New(parent, playerName, unit)
-        bar:SetPosition(0, yOffset)
 
-        local itemLevel = PIL.Players:GetItemLevel(unit)
-        -- Pass true for noAnimation to prevent flashing during initial creation
-        bar:Update(itemLevel, nil, nil, true)
+    if PIL.Config.groupByRole then
+        -- Group players by role
+        local playersByRole = {
+            ["TANK"] = {},
+            ["HEALER"] = {},
+            ["DAMAGER"] = {}
+        }
 
-        -- Ensure the color is properly applied
-        bar:UpdateColor()
+        -- Sort players into role groups
+        for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
+            local role = PIL.Players:GetRole(unit)
+            table.insert(playersByRole[role], unit)
+        end
 
-        table.insert(self.bars, bar)
+        -- Create bars for each role group
+        local roleOrder = {"TANK", "HEALER", "DAMAGER"}
 
-        -- When barSpacing is 0, position bars exactly barHeight pixels apart
-        if PIL.Config.barSpacing == 0 then
-            yOffset = yOffset - PIL.Config.barHeight
-        else
-            yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
+        for _, role in ipairs(roleOrder) do
+            local players = playersByRole[role]
+
+            -- Only create a header if there are players with this role
+            if #players > 0 then
+                -- Calculate average item level for this role group
+                local avgItemLevel = PIL.Players:CalculateAverageItemLevel(players)
+
+                -- Create role header with average item level
+                local header = self:CreateRoleHeader(parent, role, yOffset, avgItemLevel)
+
+                -- Update yOffset for the first bar after the header
+                if PIL.Config.barSpacing == 0 then
+                    yOffset = yOffset - 20 -- Header height
+                else
+                    yOffset = yOffset - (20 + PIL.Config.barSpacing)
+                end
+
+                -- Create bars for players in this role
+                for _, unit in ipairs(players) do
+                    local playerName = PIL.Players:GetName(unit)
+                    local bar = PIL.StatBar:New(parent, playerName, unit)
+                    bar:SetPosition(0, yOffset)
+
+                    local itemLevel = PIL.Players:GetItemLevel(unit)
+                    -- Pass true for noAnimation to prevent flashing during initial creation
+                    bar:Update(itemLevel, nil, nil, true)
+
+                    -- Ensure the color is properly applied
+                    bar:UpdateColor()
+
+                    table.insert(self.bars, bar)
+
+                    -- When barSpacing is 0, position bars exactly barHeight pixels apart
+                    if PIL.Config.barSpacing == 0 then
+                        yOffset = yOffset - PIL.Config.barHeight
+                    else
+                        yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
+                    end
+                end
+            end
+        end
+    else
+        -- Original behavior without role grouping
+        for _, unit in ipairs(PIL.Players.PLAYER_ORDER) do
+            local playerName = PIL.Players:GetName(unit)
+            local bar = PIL.StatBar:New(parent, playerName, unit)
+            bar:SetPosition(0, yOffset)
+
+            local itemLevel = PIL.Players:GetItemLevel(unit)
+            -- Pass true for noAnimation to prevent flashing during initial creation
+            bar:Update(itemLevel, nil, nil, true)
+
+            -- Ensure the color is properly applied
+            bar:UpdateColor()
+
+            table.insert(self.bars, bar)
+
+            -- When barSpacing is 0, position bars exactly barHeight pixels apart
+            if PIL.Config.barSpacing == 0 then
+                yOffset = yOffset - PIL.Config.barHeight
+            else
+                yOffset = yOffset - (PIL.Config.barHeight + PIL.Config.barSpacing)
+            end
         end
     end
 
@@ -72,6 +222,13 @@ function BarManager:UpdateAllBars(forceUpdate, noAnimation)
 			anyValueChanged = true
 			-- Store the new value for next comparison
 			self.previousValues[unit] = value
+		end
+
+		-- Always update the name text to ensure it's visible
+		local playerName = PIL.Players:GetName(unit)
+		if bar.name ~= playerName then
+			bar.name = playerName
+			bar.frame.nameText:SetText(playerName)
 		end
 	end
 
@@ -122,6 +279,22 @@ function BarManager:ResizeBars()
     local totalHeight = #self.bars * PIL.Config.barHeight
     if PIL.Config.barSpacing > 0 then
         totalHeight = totalHeight + (#self.bars - 1) * PIL.Config.barSpacing
+    end
+
+    -- Add height for role headers if grouping by role is enabled
+    if PIL.Config.groupByRole then
+        local headerCount = 0
+        for _, _ in pairs(self.roleHeaders) do
+            headerCount = headerCount + 1
+        end
+
+        -- Each header is 20 pixels tall
+        totalHeight = totalHeight + (headerCount * 20)
+
+        -- Add spacing between headers and bars if barSpacing is enabled
+        if PIL.Config.barSpacing > 0 then
+            totalHeight = totalHeight + (headerCount * PIL.Config.barSpacing)
+        end
     end
 
     return totalHeight
@@ -176,8 +349,8 @@ end
 -- This function will either update the existing bars or recreate them
 -- depending on whether sorting by item level is enabled
 function BarManager:UpdateBarsWithSorting(forceUpdate)
-	-- If sorting by item level, we need to ensure proper order
-	if PIL.Config.sortOption == "ILVL_DESC" or PIL.Config.sortOption == "ILVL_ASC" then
+	-- If sorting by item level or grouping by role is enabled, we need to ensure proper order
+	if PIL.Config.sortOption == "ILVL_DESC" or PIL.Config.sortOption == "ILVL_ASC" or PIL.Config.groupByRole then
 		-- Resort the players
 		PIL.Players:ScanGroup()
 
@@ -192,7 +365,7 @@ function BarManager:UpdateBarsWithSorting(forceUpdate)
 		end
 
 		-- If we have unknown players or no bars yet, do a full rebuild
-		if hasUnknownPlayers or #self.bars == 0 or forceUpdate then
+		if hasUnknownPlayers or #self.bars == 0 or forceUpdate or PIL.Config.groupByRole then
 			if PIL.Core and PIL.Core.contentFrame then
 				self:CreateBars(PIL.Core.contentFrame)
 				PIL.Core:AdjustFrameHeight()

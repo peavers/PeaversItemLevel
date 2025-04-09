@@ -34,7 +34,9 @@ PIL.Config = {
 	customColors = {},
 	hideOutOfCombat = false, -- Hide the addon when out of combat
 	ilvlStepPercentage = 2.0, -- Percentage per item level difference for progress bar
-	sortOption = "NAME_ASC" -- Sorting option: ILVL_DESC, ILVL_ASC, NAME_ASC, NAME_DESC
+	sortOption = "NAME_ASC", -- Sorting option: ILVL_DESC, ILVL_ASC, NAME_ASC, NAME_DESC
+	groupByRole = false, -- Group players by their role (Tank, Healer, DPS)
+	displayMode = "ALWAYS" -- Display mode: ALWAYS, PARTY_ONLY, RAID_ONLY
 }
 
 -- Initialize default showStats values
@@ -74,7 +76,9 @@ function Config:Save()
 		customColors = self.customColors,
 		hideOutOfCombat = self.hideOutOfCombat,
 		ilvlStepPercentage = self.ilvlStepPercentage,
-		sortOption = self.sortOption
+		sortOption = self.sortOption,
+		groupByRole = self.groupByRole,
+		displayMode = self.displayMode
 	}
 
 	-- Save data to the database
@@ -157,6 +161,12 @@ function Config:LoadSettings(source)
 	elseif source.sortByIlvl ~= nil then
 		-- Convert old boolean setting to new string setting
 		self.sortOption = source.sortByIlvl and "ILVL_DESC" or "NAME_ASC"
+	end
+	if source.groupByRole ~= nil then
+		self.groupByRole = source.groupByRole
+	end
+	if source.displayMode ~= nil then
+		self.displayMode = source.displayMode
 	end
 end
 
@@ -273,5 +283,15 @@ function Config:Initialize()
     -- Ensure sortOption has a default value
     if self.sortOption == nil then
         self.sortOption = "NAME_ASC"
+    end
+
+    -- Ensure groupByRole has a default value
+    if self.groupByRole == nil then
+        self.groupByRole = false
+    end
+
+    -- Ensure displayMode has a default value
+    if self.displayMode == nil then
+        self.displayMode = "ALWAYS"
     end
 end
