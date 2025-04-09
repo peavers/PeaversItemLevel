@@ -1,13 +1,13 @@
-local _, PDS = ...
-local Core = PDS.Core
+local _, PIL = ...
+local Core = PIL.Core
 
--- Register slash command handler for /pds
-SLASH_PEAVERSDYNAMICSTATS1 = "/pds"
-SlashCmdList["PEAVERSDYNAMICSTATS"] = function(msg)
+-- Register slash command handlers
+SLASH_PEAVERSITEMLEVEL1 = "/pil"
+SlashCmdList["PEAVERSITEMLEVEL"] = function(msg)
 	if msg == "config" or msg == "options" then
 		-- Open configuration panel
-		if PDS.Config.OpenOptionsCommand then
-			PDS.Config.OpenOptionsCommand()
+		if PIL.Config.OpenOptionsCommand then
+			PIL.Config.OpenOptionsCommand()
 		else
  		-- Open category using the latest API
  		Settings.OpenToCategory("PeaversItemLevel")

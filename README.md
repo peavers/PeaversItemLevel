@@ -1,6 +1,6 @@
 # PeaversItemLevel
 
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/peavers/PeaversItemLevel)](https://github.com/peavers/PeaversItemLevel/commits/master) [![Last commit](https://img.shields.io/github/last-commit/peavers/PeaversItemLevel)](https://github.com/peavers/PeaversItemLevel/master) [![CurseForge](https://img.shields.io/curseforge/dt/1230220?label=CurseForge&color=F16436)](https://www.curseforge.com/wow/addons/peaversitemlevel)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/peavers/PeaversItemLevel)](https://github.com/peavers/PeaversItemLevel/commits/master) [![Last commit](https://img.shields.io/github/last-commit/peavers/PeaversItemLevel)](https://github.com/peavers/PeaversItemLevel/commits/master) [![CurseForge](https://img.shields.io/curseforge/dt/1239246?label=CurseForge&color=F16436)](https://www.curseforge.com/wow/addons/peaversitemlevel)
 
 ## Overview
 
@@ -28,8 +28,8 @@ PeaversItemLevel is a World of Warcraft addon that displays player item levels i
 	* Ensure PeaversItemLevel is enabled in your addons list on the character selection screen.
 
 3. **Basic Commands**
-	* Type `/pds` to toggle the item level display on/off
-	* Type `/pds config` to open the configuration panel
+	* Type `/pil` to toggle the item level display on/off
+	* Type `/pil config` to open the configuration panel
 	* Left-click and drag the frame to reposition it
 
 4. **Customization Options**
