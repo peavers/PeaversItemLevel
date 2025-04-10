@@ -290,7 +290,13 @@ end
 
 -- Updates the height of the bar
 function StatBar:UpdateHeight()
-	self.frame:SetHeight(PIL.Config.barHeight)
+    self.frame:SetHeight(PIL.Config.barHeight)
+
+    -- Force a UI update to ensure dimensions are correct
+    self.frame:UpdateLayout()
+
+    -- Recalculate name truncation with the actual current dimensions
+    self:UpdateNameText()
 end
 
 -- Updates the width of the bar
@@ -305,37 +311,38 @@ end
 
 -- Updates the name text, truncating if necessary
 function StatBar:UpdateNameText()
-	if not self.frame or not self.frame.nameText then return end
+    if not self.frame or not self.frame.nameText then return end
 
-	-- Get the available width for the name text
-	local barWidth = PIL.Config.barWidth
-	local valueTextWidth = self.frame.valueText:GetStringWidth() + 8 -- Add some padding
-	local availableWidth = barWidth - valueTextWidth - 8 -- Subtract padding for the name text
+    -- Get the actual width of the bar instead of using config value
+    local barWidth = self.frame.bar:GetWidth()
+    if barWidth == 0 then
+        -- Fallback to config width if actual width isn't available yet
+        barWidth = PIL.Config.barWidth
+    end
 
-	-- If the name is too long, truncate it
-	local fullName = self.name
+    local valueTextWidth = self.frame.valueText:GetStringWidth() + 8 -- Add padding
+    local availableWidth = barWidth - valueTextWidth - 8 -- Subtract padding
 
-	-- Set the full name first to get accurate width measurement
-	self.frame.nameText:SetText(fullName)
-	local nameWidth = self.frame.nameText:GetStringWidth()
+    -- Set the full name first to measure its width
+    local fullName = self.name
+    self.frame.nameText:SetText(fullName)
+    local nameWidth = self.frame.nameText:GetStringWidth()
 
-	-- Only truncate if the name is actually too long and we have space to display something
-	if nameWidth > availableWidth and availableWidth > 10 then
-		-- Truncate the name and add "..."
-		local truncatedName = fullName
-		local ellipsis = "..."
+    -- Only truncate if necessary and we have space to show something
+    if nameWidth > availableWidth and availableWidth > 10 then
+        local truncatedName = fullName
+        local ellipsis = "..."
 
-		-- Start with the full name and gradually reduce it until it fits
-		while self.frame.nameText:GetStringWidth(truncatedName .. ellipsis) > availableWidth and #truncatedName > 0 do
-			truncatedName = string.sub(truncatedName, 1, #truncatedName - 1)
-		end
+        -- Gradually reduce the name until it fits with ellipsis
+        while (self.frame.nameText:GetStringWidth(truncatedName) + self.frame.nameText:GetStringWidth(ellipsis)) > availableWidth and #truncatedName > 1 do
+            truncatedName = string.sub(truncatedName, 1, #truncatedName - 1)
+        end
 
-		-- Set the truncated name with ellipsis
-		self.frame.nameText:SetText(truncatedName .. ellipsis)
-	else
-		-- Name fits, use the full name
-		self.frame.nameText:SetText(fullName)
-	end
+        self.frame.nameText:SetText(truncatedName .. ellipsis)
+    else
+        -- Name fits, use the full name
+        self.frame.nameText:SetText(fullName)
+    end
 end
 
 -- Updates the background opacity of the bar
