@@ -42,18 +42,29 @@ function ConfigUI:InitializeOptions()
 	local _, newY = UI:CreateSeparator(content, baseSpacing, yPos)
 	yPos = newY - baseSpacing
 
-
-	-- Bar settings section (removed Display Options section as it had no content)
-
-	-- Create bar settings
-	yPos = self:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
+	-- 1. DISPLAY SETTINGS SECTION
+	yPos = self:CreateDisplayOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	-- Add a separator between major sections
 	local _, newY = UI:CreateSeparator(content, baseSpacing, yPos)
 	yPos = newY - baseSpacing
 
-	-- Create visual settings
-	yPos = self:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing)
+	-- 2. BAR APPEARANCE SECTION
+	yPos = self:CreateBarAppearanceOptions(content, yPos, baseSpacing, sectionSpacing)
+
+	-- Add a separator between major sections
+	local _, newY = UI:CreateSeparator(content, baseSpacing, yPos)
+	yPos = newY - baseSpacing
+
+	-- 3. TEXT SETTINGS SECTION
+	yPos = self:CreateTextOptions(content, yPos, baseSpacing, sectionSpacing)
+
+	-- Add a separator between major sections
+	local _, newY = UI:CreateSeparator(content, baseSpacing, yPos)
+	yPos = newY - baseSpacing
+
+	-- 4. BEHAVIOR SETTINGS SECTION
+	yPos = self:CreateBehaviorOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	-- Update content height based on the last element position
 	content:SetHeight(math.abs(yPos) + 50)
@@ -65,117 +76,23 @@ function ConfigUI:InitializeOptions()
 	return panel
 end
 
--- Creates bar settings
-function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
+-- 1. DISPLAY SETTINGS - Frame positioning, visibility, and main dimensions
+function ConfigUI:CreateDisplayOptions(content, yPos, baseSpacing, sectionSpacing)
 	baseSpacing = baseSpacing or 25
 	sectionSpacing = sectionSpacing or 40
 	local controlIndent = baseSpacing + 15
 	local subControlIndent = controlIndent + 15
 	local sliderWidth = 400
 
-	-- Bar Settings section header
-	local header, newY = UI:CreateSectionHeader(content, "Bar Settings", baseSpacing, yPos)
+	-- Display Settings section header
+	local header, newY = UI:CreateSectionHeader(content, "Display Settings", baseSpacing, yPos)
 	header:SetFont(header:GetFont(), 18)
 	yPos = newY - 10
 
-	-- Create a container for dimensions settings
-	local dimensionsLabel, newY = UI:CreateLabel(content, "Dimensions:", controlIndent, yPos, "GameFontNormalSmall")
+	-- Frame dimensions subsection
+	local dimensionsLabel, newY = UI:CreateLabel(content, "Frame Dimensions:", controlIndent, yPos, "GameFontNormalSmall")
 	dimensionsLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 5
-
-	-- Bar spacing slider
-	local spacingContainer = CreateFrame("Frame", nil, content)
-	spacingContainer:SetSize(sliderWidth, 50)
-	spacingContainer:SetPoint("TOPLEFT", controlIndent, yPos)
-
-	local spacingLabel = spacingContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	spacingLabel:SetPoint("TOPLEFT", 0, 0)
-	spacingLabel:SetText("Bar Spacing: " .. Config.barSpacing)
-
-	local spacingSlider = CreateFrame("Slider", "PeaversSpacingSlider", spacingContainer, "OptionsSliderTemplate")
-	spacingSlider:SetPoint("TOPLEFT", 0, -20)
-	spacingSlider:SetWidth(sliderWidth)
-	spacingSlider:SetMinMaxValues(-5, 10)
-	spacingSlider:SetValueStep(1)
-	spacingSlider:SetValue(Config.barSpacing)
-
-	-- Hide default slider text
-	local sliderName = spacingSlider:GetName()
-	if sliderName then
-		local lowText = _G[sliderName .. "Low"]
-		local highText = _G[sliderName .. "High"]
-		local valueText = _G[sliderName .. "Text"]
-
-		if lowText then
-			lowText:SetText("")
-		end
-		if highText then
-			highText:SetText("")
-		end
-		if valueText then
-			valueText:SetText("")
-		end
-	end
-
-	spacingSlider:SetScript("OnValueChanged", function(self, value)
-		local roundedValue = math.floor(value + 0.5)
-		spacingLabel:SetText("Bar Spacing: " .. roundedValue)
-		Config.barSpacing = roundedValue
-		Config:Save()
-		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-			PIL.Core:AdjustFrameHeight()
-		end
-	end)
-
-	yPos = yPos - 55
-
-	-- Bar height slider
-	local heightContainer = CreateFrame("Frame", nil, content)
-	heightContainer:SetSize(sliderWidth, 50)
-	heightContainer:SetPoint("TOPLEFT", controlIndent, yPos)
-
-	local heightLabel = heightContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	heightLabel:SetPoint("TOPLEFT", 0, 0)
-	heightLabel:SetText("Bar Height: " .. Config.barHeight)
-
-	local heightSlider = CreateFrame("Slider", "PeaversHeightSlider", heightContainer, "OptionsSliderTemplate")
-	heightSlider:SetPoint("TOPLEFT", 0, -20)
-	heightSlider:SetWidth(sliderWidth)
-	heightSlider:SetMinMaxValues(10, 40)
-	heightSlider:SetValueStep(1)
-	heightSlider:SetValue(Config.barHeight)
-
-	-- Hide default slider text
-	local sliderName = heightSlider:GetName()
-	if sliderName then
-		local lowText = _G[sliderName .. "Low"]
-		local highText = _G[sliderName .. "High"]
-		local valueText = _G[sliderName .. "Text"]
-
-		if lowText then
-			lowText:SetText("")
-		end
-		if highText then
-			highText:SetText("")
-		end
-		if valueText then
-			valueText:SetText("")
-		end
-	end
-
-	heightSlider:SetScript("OnValueChanged", function(self, value)
-		local roundedValue = math.floor(value + 0.5)
-		heightLabel:SetText("Bar Height: " .. roundedValue)
-		Config.barHeight = roundedValue
-		Config:Save()
-		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-			PIL.Core:AdjustFrameHeight()
-		end
-	end)
-
-	yPos = yPos - 55
+	yPos = newY - 8
 
 	-- Frame width slider
 	local widthContainer = CreateFrame("Frame", nil, content)
@@ -227,43 +144,386 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 
 	yPos = yPos - 55
 
+	-- Background opacity slider
+	local opacityContainer = CreateFrame("Frame", nil, content)
+	opacityContainer:SetSize(sliderWidth, 50)
+	opacityContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local opacityLabel = opacityContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	opacityLabel:SetPoint("TOPLEFT", 0, 0)
+	opacityLabel:SetText("Background Opacity: " .. math.floor(Config.bgAlpha * 100) .. "%")
+
+	local opacitySlider = CreateFrame("Slider", "PeaversOpacitySlider", opacityContainer, "OptionsSliderTemplate")
+	opacitySlider:SetPoint("TOPLEFT", 0, -20)
+	opacitySlider:SetWidth(sliderWidth)
+	opacitySlider:SetMinMaxValues(0, 1)
+	opacitySlider:SetValueStep(0.05)
+	opacitySlider:SetValue(Config.bgAlpha)
+
+	-- Hide default slider text
+	local sliderName = opacitySlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	opacitySlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value * 20 + 0.5) / 20
+		opacityLabel:SetText("Background Opacity: " .. math.floor(roundedValue * 100) .. "%")
+		Config.bgAlpha = roundedValue
+		Config:Save()
+		if PIL.Core and PIL.Core.frame then
+			PIL.Core.frame:SetBackdropColor(
+				Config.bgColor.r,
+				Config.bgColor.g,
+				Config.bgColor.b,
+				Config.bgAlpha
+			)
+			PIL.Core.frame:SetBackdropBorderColor(0, 0, 0, Config.bgAlpha)
+			if PIL.Core.titleBar then
+				PIL.Core.titleBar:SetBackdropColor(
+					Config.bgColor.r,
+					Config.bgColor.g,
+					Config.bgColor.b,
+					Config.bgAlpha
+				)
+				PIL.Core.titleBar:SetBackdropBorderColor(0, 0, 0, Config.bgAlpha)
+			end
+		end
+	end)
+
+	yPos = yPos - 65
+
 	-- Add a thin separator with more spacing
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- Increased spacing after separator
+	yPos = newY - 15
 
-	-- Create a container for layout settings
-	local layoutLabel, newY = UI:CreateLabel(content, "Layout:", controlIndent, yPos, "GameFontNormalSmall")
-	layoutLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly increased spacing
+	-- Visibility options subsection
+	local visibilityLabel, newY = UI:CreateLabel(content, "Visibility Options:", controlIndent, yPos, "GameFontNormalSmall")
+	visibilityLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
 
-	-- Group by role checkbox
-	local groupByRoleCheckbox, newY = UI:CreateCheckbox(
+	-- Show title bar checkbox
+	local titleBarCheckbox, newY = UI:CreateCheckbox(
 		content,
-		"PeaversGroupByRoleCheckbox",
-		"Group Players by Role",
+		"PeaversTitleBarCheckbox",
+		"Show Title Bar",
 		subControlIndent,
 		yPos,
-		Config.groupByRole,
+		Config.showTitleBar,
 		{ 1, 1, 1 },
 		function(self)
-			Config.groupByRole = self:GetChecked()
+			Config.showTitleBar = self:GetChecked()
 			Config:Save()
-			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-				PIL.Core:AdjustFrameHeight()
+			if PIL.Core then
+				PIL.Core:UpdateTitleBarVisibility()
 			end
 		end
 	)
-	yPos = newY - 12  -- Increased spacing
+	yPos = newY - 8
+
+	-- Lock position checkbox
+	local lockPositionCheckbox, newY = UI:CreateCheckbox(
+		content,
+		"PeaversLockPositionCheckbox",
+		"Lock Frame Position",
+		subControlIndent,
+		yPos,
+		Config.lockPosition,
+		{ 1, 1, 1 },
+		function(self)
+			Config.lockPosition = self:GetChecked()
+			Config:Save()
+			if PIL.Core then
+				PIL.Core:UpdateFrameLock()
+			end
+		end
+	)
+	yPos = newY - 8
+
+	-- Hide out of combat checkbox
+	local hideOutOfCombatCheckbox, newY = UI:CreateCheckbox(
+		content,
+		"PeaversHideOutOfCombatCheckbox",
+		"Hide When Out of Combat",
+		subControlIndent,
+		yPos,
+		Config.hideOutOfCombat,
+		{ 1, 1, 1 },
+		function(self)
+			Config.hideOutOfCombat = self:GetChecked()
+			Config:Save()
+			-- Apply the change immediately if out of combat
+			if PIL.Core and PIL.Core.frame then
+				local inCombat = InCombatLockdown()
+				if self:GetChecked() and not inCombat then
+					PIL.Core.frame:Hide()
+				elseif not self:GetChecked() and not PIL.Core.frame:IsShown() then
+					PIL.Core.frame:Show()
+				end
+			end
+		end
+	)
+	yPos = newY - 12
+
+	-- Display mode dropdown container
+	local displayModeContainer = CreateFrame("Frame", nil, content)
+	displayModeContainer:SetSize(sliderWidth, 60)
+	displayModeContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
+
+	local displayModeLabel = displayModeContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	displayModeLabel:SetPoint("TOPLEFT", 0, 0)
+	displayModeLabel:SetText("Display Mode")
+
+	local displayModeOptions = {
+		["ALWAYS"] = "Always Show",
+		["PARTY_ONLY"] = "Show in Party Only",
+		["RAID_ONLY"] = "Show in Raid Only"
+	}
+
+	local currentDisplayMode = displayModeOptions[Config.displayMode] or "Always Show"
+
+	local displayModeDropdown = CreateFrame("Frame", "PeaversDisplayModeDropdown", displayModeContainer, "UIDropDownMenuTemplate")
+	displayModeDropdown:SetPoint("TOPLEFT", 0, -20)
+	UIDropDownMenu_SetWidth(displayModeDropdown, 345)
+	UIDropDownMenu_SetText(displayModeDropdown, currentDisplayMode)
+
+	UIDropDownMenu_Initialize(displayModeDropdown, function(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		for value, text in pairs(displayModeOptions) do
+			info.text = text
+			info.checked = (value == Config.displayMode)
+			info.func = function()
+				Config.displayMode = value
+				UIDropDownMenu_SetText(displayModeDropdown, text)
+				Config:Save()
+				-- Apply the change immediately
+				if PIL.Core and PIL.Core.frame then
+					PIL.Core:UpdateFrameVisibility()
+				end
+			end
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
+
+	yPos = yPos - 65
+
+	return yPos
+end
+
+-- 2. BAR APPEARANCE - Everything related to the bars appearance and layout
+function ConfigUI:CreateBarAppearanceOptions(content, yPos, baseSpacing, sectionSpacing)
+	baseSpacing = baseSpacing or 25
+	sectionSpacing = sectionSpacing or 40
+	local controlIndent = baseSpacing + 15
+	local subControlIndent = controlIndent + 15
+	local sliderWidth = 400
+
+	-- Bar Appearance section header
+	local header, newY = UI:CreateSectionHeader(content, "Bar Appearance", baseSpacing, yPos)
+	header:SetFont(header:GetFont(), 18)
+	yPos = newY - 10
+
+	-- Bar dimensions subsection
+	local dimensionsLabel, newY = UI:CreateLabel(content, "Bar Dimensions:", controlIndent, yPos, "GameFontNormalSmall")
+	dimensionsLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
+
+	-- Bar height slider
+	local heightContainer = CreateFrame("Frame", nil, content)
+	heightContainer:SetSize(sliderWidth, 50)
+	heightContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local heightLabel = heightContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	heightLabel:SetPoint("TOPLEFT", 0, 0)
+	heightLabel:SetText("Bar Height: " .. Config.barHeight)
+
+	local heightSlider = CreateFrame("Slider", "PeaversHeightSlider", heightContainer, "OptionsSliderTemplate")
+	heightSlider:SetPoint("TOPLEFT", 0, -20)
+	heightSlider:SetWidth(sliderWidth)
+	heightSlider:SetMinMaxValues(10, 40)
+	heightSlider:SetValueStep(1)
+	heightSlider:SetValue(Config.barHeight)
+
+	-- Hide default slider text
+	local sliderName = heightSlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	heightSlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value + 0.5)
+		heightLabel:SetText("Bar Height: " .. roundedValue)
+		Config.barHeight = roundedValue
+		Config:Save()
+		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+			PIL.Core:AdjustFrameHeight()
+		end
+	end)
+
+	yPos = yPos - 55
+
+	-- Bar spacing slider
+	local spacingContainer = CreateFrame("Frame", nil, content)
+	spacingContainer:SetSize(sliderWidth, 50)
+	spacingContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local spacingLabel = spacingContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	spacingLabel:SetPoint("TOPLEFT", 0, 0)
+	spacingLabel:SetText("Bar Spacing: " .. Config.barSpacing)
+
+	local spacingSlider = CreateFrame("Slider", "PeaversSpacingSlider", spacingContainer, "OptionsSliderTemplate")
+	spacingSlider:SetPoint("TOPLEFT", 0, -20)
+	spacingSlider:SetWidth(sliderWidth)
+	spacingSlider:SetMinMaxValues(-5, 10)
+	spacingSlider:SetValueStep(1)
+	spacingSlider:SetValue(Config.barSpacing)
+
+	-- Hide default slider text
+	local sliderName = spacingSlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	spacingSlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value + 0.5)
+		spacingLabel:SetText("Bar Spacing: " .. roundedValue)
+		Config.barSpacing = roundedValue
+		Config:Save()
+		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+			PIL.Core:AdjustFrameHeight()
+		end
+	end)
+
+	yPos = yPos - 65
 
 	-- Add a thin separator
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- Increased spacing after separator
+	yPos = newY - 15
 
-	-- Create a container for appearance settings
-	local appearanceLabel, newY = UI:CreateLabel(content, "Appearance:", controlIndent, yPos, "GameFontNormalSmall")
-	appearanceLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly increased spacing
+	-- Bar style subsection
+	local styleLabel, newY = UI:CreateLabel(content, "Bar Style:", controlIndent, yPos, "GameFontNormalSmall")
+	styleLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
+
+	-- Texture dropdown container
+	local textureContainer = CreateFrame("Frame", nil, content)
+	textureContainer:SetSize(sliderWidth, 60)
+	textureContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local textureLabel = textureContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	textureLabel:SetPoint("TOPLEFT", 0, 0)
+	textureLabel:SetText("Bar Texture")
+
+	local textures = Config:GetBarTextures()
+	local currentTexture = textures[Config.barTexture] or "Default"
+
+	local textureDropdown = CreateFrame("Frame", "PeaversTextureDropdown", textureContainer, "UIDropDownMenuTemplate")
+	textureDropdown:SetPoint("TOPLEFT", 0, -20)
+	UIDropDownMenu_SetWidth(textureDropdown, 345)
+	UIDropDownMenu_SetText(textureDropdown, currentTexture)
+
+	UIDropDownMenu_Initialize(textureDropdown, function(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		for path, name in pairs(textures) do
+			info.text = name
+			info.checked = (path == Config.barTexture)
+			info.func = function()
+				Config.barTexture = path
+				UIDropDownMenu_SetText(textureDropdown, name)
+				Config:Save()
+				if PIL.BarManager then
+					PIL.BarManager:ResizeBars()
+				end
+			end
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
+
+	yPos = yPos - 65
+
+	-- Bar opacity slider
+	local barOpacityContainer = CreateFrame("Frame", nil, content)
+	barOpacityContainer:SetSize(sliderWidth, 50)
+	barOpacityContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local barOpacityLabel = barOpacityContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	barOpacityLabel:SetPoint("TOPLEFT", 0, 0)
+	barOpacityLabel:SetText("Bar Opacity: " .. math.floor(Config.barAlpha * 100) .. "%")
+
+	local barOpacitySlider = CreateFrame("Slider", "PeaversBarOpacitySlider", barOpacityContainer, "OptionsSliderTemplate")
+	barOpacitySlider:SetPoint("TOPLEFT", 0, -20)
+	barOpacitySlider:SetWidth(sliderWidth)
+	barOpacitySlider:SetMinMaxValues(0, 1)
+	barOpacitySlider:SetValueStep(0.05)
+	barOpacitySlider:SetValue(Config.barAlpha)
+
+	-- Hide default slider text
+	local sliderName = barOpacitySlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	barOpacitySlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value * 20 + 0.5) / 20
+		barOpacityLabel:SetText("Bar Opacity: " .. math.floor(roundedValue * 100) .. "%")
+		Config.barAlpha = roundedValue
+		Config:Save()
+		if PIL.BarManager then
+			PIL.BarManager:UpdateBarsWithSorting(true)
+		end
+	end)
+
+	yPos = yPos - 55
 
 	-- Bar background opacity slider
 	local barBgOpacityContainer = CreateFrame("Frame", nil, content)
@@ -309,63 +569,16 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 		end
 	end)
 
-	yPos = yPos - 55
+	yPos = yPos - 65
 
-	-- Bar opacity slider
-	local barOpacityContainer = CreateFrame("Frame", nil, content)
-	barOpacityContainer:SetSize(sliderWidth, 50)
-	barOpacityContainer:SetPoint("TOPLEFT", controlIndent, yPos)
-
-	local barOpacityLabel = barOpacityContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	barOpacityLabel:SetPoint("TOPLEFT", 0, 0)
-	barOpacityLabel:SetText("Bar Opacity: " .. math.floor(Config.barAlpha * 100) .. "%")
-
-	local barOpacitySlider = CreateFrame("Slider", "PeaversBarOpacitySlider", barOpacityContainer, "OptionsSliderTemplate")
-	barOpacitySlider:SetPoint("TOPLEFT", 0, -20)
-	barOpacitySlider:SetWidth(sliderWidth)
-	barOpacitySlider:SetMinMaxValues(0, 1)
-	barOpacitySlider:SetValueStep(0.05)
-	barOpacitySlider:SetValue(Config.barAlpha)
-
-	-- Hide default slider text
-	local sliderName = barOpacitySlider:GetName()
-	if sliderName then
-		local lowText = _G[sliderName .. "Low"]
-		local highText = _G[sliderName .. "High"]
-		local valueText = _G[sliderName .. "Text"]
-
-		if lowText then
-			lowText:SetText("")
-		end
-		if highText then
-			highText:SetText("")
-		end
-		if valueText then
-			valueText:SetText("")
-		end
-	end
-
-	barOpacitySlider:SetScript("OnValueChanged", function(self, value)
-		local roundedValue = math.floor(value * 20 + 0.5) / 20
-		barOpacityLabel:SetText("Bar Opacity: " .. math.floor(roundedValue * 100) .. "%")
-		Config.barAlpha = roundedValue
-		Config:Save()
-		if PIL.BarManager then
-			-- Update all bars to apply the new opacity
-			PIL.BarManager:UpdateBarsWithSorting(true)
-		end
-	end)
-
-	yPos = yPos - 55
-
-	-- Add a thin separator with more spacing
+	-- Add a thin separator
 	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- Increased spacing after separator
+	yPos = newY - 15
 
-	-- Create a container for item level step settings
-	local ilvlStepLabel, newY = UI:CreateLabel(content, "Item Level Progress:", controlIndent, yPos, "GameFontNormalSmall")
-	ilvlStepLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly increased spacing
+	-- Item Level progress settings
+	local ilvlProgressLabel, newY = UI:CreateLabel(content, "Item Level Progress:", controlIndent, yPos, "GameFontNormalSmall")
+	ilvlProgressLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
 
 	-- Item level step percentage slider
 	local ilvlStepContainer = CreateFrame("Frame", nil, content)
@@ -407,30 +620,219 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 		Config.ilvlStepPercentage = roundedValue
 		Config:Save()
 		if PIL.BarManager then
-			-- Force update all bars when the step percentage changes
 			PIL.BarManager:UpdateBarsWithSorting(true)
 		end
 	end)
 
-	-- The problematic step explanation - moved it further down with proper spacing
-	yPos = yPos - 55  -- Space after the slider
+	yPos = yPos - 55
 
-	-- Add explanation for Item Level Step Percentage with proper spacing and width
+	-- Add explanation for Item Level Step Percentage
 	local ilvlStepExplanation = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	ilvlStepExplanation:SetPoint("TOPLEFT", controlIndent, yPos)
-	ilvlStepExplanation:SetWidth(sliderWidth)  -- Use the same width as the slider
+	ilvlStepExplanation:SetWidth(sliderWidth)
 	ilvlStepExplanation:SetJustifyH("LEFT")
 	ilvlStepExplanation:SetText("Controls how much of the progress bar is filled based on item level differences. " ..
 		"Higher values make the bars more sensitive to small item level differences, " ..
 		"Lower values make the bars more gradual")
 
-	-- Calculate the height of the explanation text (approximately 3 lines)
-	local explanationHeight = 40  -- Estimated height for 3 lines of text
-	yPos = yPos - explanationHeight - 15  -- Add extra padding after the explanation
+	-- Calculate the height of the explanation text
+	local explanationHeight = 40
+	yPos = yPos - explanationHeight - 15
 
-	-- Sort options dropdown container with more space
+	return yPos
+end
+
+-- 3. TEXT SETTINGS - Font and text appearance settings
+function ConfigUI:CreateTextOptions(content, yPos, baseSpacing, sectionSpacing)
+	baseSpacing = baseSpacing or 25
+	sectionSpacing = sectionSpacing or 40
+	local controlIndent = baseSpacing + 15
+	local subControlIndent = controlIndent + 15
+	local sliderWidth = 400
+
+	-- Text Settings section header
+	local header, newY = UI:CreateSectionHeader(content, "Text Settings", baseSpacing, yPos)
+	header:SetFont(header:GetFont(), 18)
+	yPos = newY - 10
+
+	-- Font selection subsection
+	local fontSelectLabel, newY = UI:CreateLabel(content, "Font Selection:", controlIndent, yPos, "GameFontNormalSmall")
+	fontSelectLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
+
+	-- Font dropdown container
+	local fontContainer = CreateFrame("Frame", nil, content)
+	fontContainer:SetSize(sliderWidth, 60)
+	fontContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local fontLabel = fontContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	fontLabel:SetPoint("TOPLEFT", 0, 0)
+	fontLabel:SetText("Font")
+
+	local fonts = Config:GetFonts()
+	local currentFont = fonts[Config.fontFace] or "Default"
+
+	local fontDropdown = CreateFrame("Frame", "PeaversFontDropdown", fontContainer, "UIDropDownMenuTemplate")
+	fontDropdown:SetPoint("TOPLEFT", 0, -20)
+	UIDropDownMenu_SetWidth(fontDropdown, 345)
+	UIDropDownMenu_SetText(fontDropdown, currentFont)
+
+	UIDropDownMenu_Initialize(fontDropdown, function(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		for path, name in pairs(fonts) do
+			info.text = name
+			info.checked = (path == Config.fontFace)
+			info.func = function()
+				Config.fontFace = path
+				UIDropDownMenu_SetText(fontDropdown, name)
+				Config:Save()
+				if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+					PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+					PIL.Core:AdjustFrameHeight()
+				end
+			end
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
+
+	yPos = yPos - 65
+
+	-- Font size slider
+	local fontSizeContainer = CreateFrame("Frame", nil, content)
+	fontSizeContainer:SetSize(sliderWidth, 50)
+	fontSizeContainer:SetPoint("TOPLEFT", controlIndent, yPos)
+
+	local fontSizeLabel = fontSizeContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	fontSizeLabel:SetPoint("TOPLEFT", 0, 0)
+	fontSizeLabel:SetText("Font Size: " .. Config.fontSize)
+
+	local fontSizeSlider = CreateFrame("Slider", "PeaversFontSizeSlider", fontSizeContainer, "OptionsSliderTemplate")
+	fontSizeSlider:SetPoint("TOPLEFT", 0, -20)
+	fontSizeSlider:SetWidth(sliderWidth)
+	fontSizeSlider:SetMinMaxValues(6, 18)
+	fontSizeSlider:SetValueStep(1)
+	fontSizeSlider:SetValue(Config.fontSize)
+
+	-- Hide default slider text
+	local sliderName = fontSizeSlider:GetName()
+	if sliderName then
+		local lowText = _G[sliderName .. "Low"]
+		local highText = _G[sliderName .. "High"]
+		local valueText = _G[sliderName .. "Text"]
+
+		if lowText then
+			lowText:SetText("")
+		end
+		if highText then
+			highText:SetText("")
+		end
+		if valueText then
+			valueText:SetText("")
+		end
+	end
+
+	fontSizeSlider:SetScript("OnValueChanged", function(self, value)
+		local roundedValue = math.floor(value + 0.5)
+		fontSizeLabel:SetText("Font Size: " .. roundedValue)
+		Config.fontSize = roundedValue
+		Config:Save()
+		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+			PIL.Core:AdjustFrameHeight()
+		end
+	end)
+
+	yPos = yPos - 55
+
+	-- Font style options
+	local fontStyleLabel, newY = UI:CreateLabel(content, "Font Style:", controlIndent, yPos, "GameFontNormalSmall")
+	fontStyleLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
+
+	-- Font outline checkbox
+	local outlineCheckbox, newY = UI:CreateCheckbox(
+		content,
+		"PeaversFontOutlineCheckbox",
+		"Outlined Font",
+		subControlIndent,
+		yPos,
+		Config.fontOutline == "OUTLINE",
+		{ 1, 1, 1 },
+		function(self)
+			Config.fontOutline = self:GetChecked() and "OUTLINE" or ""
+			Config:Save()
+			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+				PIL.Core:AdjustFrameHeight()
+			end
+		end
+	)
+	yPos = newY - 8
+
+	-- Font shadow checkbox
+	local shadowCheckbox, newY = UI:CreateCheckbox(
+		content,
+		"PeaversFontShadowCheckbox",
+		"Font Shadow",
+		subControlIndent,
+		yPos,
+		Config.fontShadow,
+		{ 1, 1, 1 },
+		function(self)
+			Config.fontShadow = self:GetChecked()
+			Config:Save()
+			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+				PIL.Core:AdjustFrameHeight()
+			end
+		end
+	)
+	yPos = newY - 15
+
+	return yPos
+end
+
+-- 4. BEHAVIOR SETTINGS - Sorting, grouping, and other behavioral settings
+function ConfigUI:CreateBehaviorOptions(content, yPos, baseSpacing, sectionSpacing)
+	baseSpacing = baseSpacing or 25
+	sectionSpacing = sectionSpacing or 40
+	local controlIndent = baseSpacing + 15
+	local subControlIndent = controlIndent + 15
+	local sliderWidth = 400
+
+	-- Behavior Settings section header
+	local header, newY = UI:CreateSectionHeader(content, "Behavior Settings", baseSpacing, yPos)
+	header:SetFont(header:GetFont(), 18)
+	yPos = newY - 10
+
+	-- Sorting subsection
+	local sortingLabel, newY = UI:CreateLabel(content, "Sorting and Grouping:", controlIndent, yPos, "GameFontNormalSmall")
+	sortingLabel:SetTextColor(0.9, 0.9, 0.9)
+	yPos = newY - 8
+
+	-- Group by role checkbox
+	local groupByRoleCheckbox, newY = UI:CreateCheckbox(
+		content,
+		"PeaversGroupByRoleCheckbox",
+		"Group Players by Role",
+		subControlIndent,
+		yPos,
+		Config.groupByRole,
+		{ 1, 1, 1 },
+		function(self)
+			Config.groupByRole = self:GetChecked()
+			Config:Save()
+			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
+				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
+				PIL.Core:AdjustFrameHeight()
+			end
+		end
+	)
+	yPos = newY - 15
+
+	-- Sort options dropdown
 	local sortContainer = CreateFrame("Frame", nil, content)
-	sortContainer:SetSize(400, 60)
+	sortContainer:SetSize(sliderWidth, 60)
 	sortContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
 
 	local sortLabel = sortContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -472,381 +874,7 @@ function ConfigUI:CreateBarOptions(content, yPos, baseSpacing, sectionSpacing)
 		end
 	end)
 
-	local newY = yPos - 65
-	yPos = newY - 10  -- Added extra spacing after dropdown
-
-	return yPos
-end
-
--- Creates visual settings with improved spacing
-function ConfigUI:CreateVisualOptions(content, yPos, baseSpacing, sectionSpacing)
-	baseSpacing = baseSpacing or 25
-	sectionSpacing = sectionSpacing or 40
-	local controlIndent = baseSpacing + 15
-	local subControlIndent = controlIndent + 15
-
-	-- Visual Settings section header
-	local header, newY = UI:CreateSectionHeader(content, "Visual Settings", baseSpacing, yPos)
-	header:SetFont(header:GetFont(), 18)
-	yPos = newY - 12  -- Slightly more spacing
-
-	-- Group 1: Layout controls
-	local layoutLabel, newY = UI:CreateLabel(content, "Layout Options:", controlIndent, yPos, "GameFontNormalSmall")
-	layoutLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly more spacing
-
-	-- Show title bar checkbox
-	local titleBarCheckbox, newY = UI:CreateCheckbox(
-		content,
-		"PeaversTitleBarCheckbox",
-		"Show Title Bar",
-		subControlIndent,
-		yPos,
-		Config.showTitleBar,
-		{ 1, 1, 1 },
-		function(self)
-			Config.showTitleBar = self:GetChecked()
-			Config:Save()
-			if PIL.Core then
-				PIL.Core:UpdateTitleBarVisibility()
-			end
-		end
-	)
-	yPos = newY - 3  -- Small spacing between checkboxes
-
-	-- Lock position checkbox
-	local lockPositionCheckbox, newY = UI:CreateCheckbox(
-		content,
-		"PeaversLockPositionCheckbox",
-		"Lock Frame Position",
-		subControlIndent,
-		yPos,
-		Config.lockPosition,
-		{ 1, 1, 1 },
-		function(self)
-			Config.lockPosition = self:GetChecked()
-			Config:Save()
-			if PIL.Core then
-				PIL.Core:UpdateFrameLock()
-			end
-		end
-	)
-	yPos = newY - 3  -- Small spacing between checkboxes
-
-	-- Hide out of combat checkbox
-	local hideOutOfCombatCheckbox, newY = UI:CreateCheckbox(
-		content,
-		"PeaversHideOutOfCombatCheckbox",
-		"Hide When Out of Combat",
-		subControlIndent,
-		yPos,
-		Config.hideOutOfCombat,
-		{ 1, 1, 1 },
-		function(self)
-			Config.hideOutOfCombat = self:GetChecked()
-			Config:Save()
-			-- Apply the change immediately if out of combat
-			if PIL.Core and PIL.Core.frame then
-				local inCombat = InCombatLockdown()
-				if self:GetChecked() and not inCombat then
-					PIL.Core.frame:Hide()
-				elseif not self:GetChecked() and not PIL.Core.frame:IsShown() then
-					PIL.Core.frame:Show()
-				end
-			end
-		end
-	)
-	yPos = newY - 12  -- Extra spacing before dropdown
-
-	-- Display mode dropdown container
-	local displayModeContainer = CreateFrame("Frame", nil, content)
-	displayModeContainer:SetSize(400, 60)
-	displayModeContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
-
-	local displayModeLabel = displayModeContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	displayModeLabel:SetPoint("TOPLEFT", 0, 0)
-	displayModeLabel:SetText("Display Mode")
-
-	local displayModeOptions = {
-		["ALWAYS"] = "Always Show",
-		["PARTY_ONLY"] = "Show in Party Only",
-		["RAID_ONLY"] = "Show in Raid Only"
-	}
-
-	local currentDisplayMode = displayModeOptions[Config.displayMode] or "Always Show"
-
-	local displayModeDropdown = CreateFrame("Frame", "PeaversDisplayModeDropdown", displayModeContainer, "UIDropDownMenuTemplate")
-	displayModeDropdown:SetPoint("TOPLEFT", 0, -20)
-	UIDropDownMenu_SetWidth(displayModeDropdown, 345)
-	UIDropDownMenu_SetText(displayModeDropdown, currentDisplayMode)
-
-	UIDropDownMenu_Initialize(displayModeDropdown, function(self, level)
-		local info = UIDropDownMenu_CreateInfo()
-		for value, text in pairs(displayModeOptions) do
-			info.text = text
-			info.checked = (value == Config.displayMode)
-			info.func = function()
-				Config.displayMode = value
-				UIDropDownMenu_SetText(displayModeDropdown, text)
-				Config:Save()
-				-- Apply the change immediately
-				if PIL.Core and PIL.Core.frame then
-					PIL.Core:UpdateFrameVisibility()
-				end
-			end
-			UIDropDownMenu_AddButton(info)
-		end
-	end)
-
-	yPos = yPos - 65 - 10  -- Extra space after dropdown
-
-	-- Add a thin separator with more spacing
-	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- More space after separator
-
-	-- Group 2: Background settings
-	local bgLabel, newY = UI:CreateLabel(content, "Background:", controlIndent, yPos, "GameFontNormalSmall")
-	bgLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly more spacing
-
-	-- Background opacity slider
-	local opacityContainer = CreateFrame("Frame", nil, content)
-	opacityContainer:SetSize(400, 50)
-	opacityContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
-
-	local opacityLabel = opacityContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	opacityLabel:SetPoint("TOPLEFT", 0, 0)
-	opacityLabel:SetText("Opacity: " .. math.floor(Config.bgAlpha * 100) .. "%")
-
-	local opacitySlider = CreateFrame("Slider", "PeaversOpacitySlider", opacityContainer, "OptionsSliderTemplate")
-	opacitySlider:SetPoint("TOPLEFT", 0, -20)
-	opacitySlider:SetWidth(400)
-	opacitySlider:SetMinMaxValues(0, 1)
-	opacitySlider:SetValueStep(0.05)
-	opacitySlider:SetValue(Config.bgAlpha)
-
-	-- Hide default slider text
-	local sliderName = opacitySlider:GetName()
-	if sliderName then
-		local lowText = _G[sliderName .. "Low"]
-		local highText = _G[sliderName .. "High"]
-		local valueText = _G[sliderName .. "Text"]
-
-		if lowText then
-			lowText:SetText("")
-		end
-		if highText then
-			highText:SetText("")
-		end
-		if valueText then
-			valueText:SetText("")
-		end
-	end
-
-	opacitySlider:SetScript("OnValueChanged", function(self, value)
-		local roundedValue = math.floor(value * 20 + 0.5) / 20
-		opacityLabel:SetText("Opacity: " .. math.floor(roundedValue * 100) .. "%")
-		Config.bgAlpha = roundedValue
-		Config:Save()
-		if PIL.Core and PIL.Core.frame then
-			PIL.Core.frame:SetBackdropColor(
-				Config.bgColor.r,
-				Config.bgColor.g,
-				Config.bgColor.b,
-				Config.bgAlpha
-			)
-			PIL.Core.frame:SetBackdropBorderColor(0, 0, 0, Config.bgAlpha)
-			if PIL.Core.titleBar then
-				PIL.Core.titleBar:SetBackdropColor(
-					Config.bgColor.r,
-					Config.bgColor.g,
-					Config.bgColor.b,
-					Config.bgAlpha
-				)
-				PIL.Core.titleBar:SetBackdropBorderColor(0, 0, 0, Config.bgAlpha)
-			end
-		end
-	end)
-
-	yPos = yPos - 55 - 10  -- Extra space after slider
-
-	-- Add a thin separator with more spacing
-	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- More space after separator
-
-	-- Group 3: Font selection
-	local textStyleLabel, newY = UI:CreateLabel(content, "Text Style:", controlIndent, yPos, "GameFontNormalSmall")
-	textStyleLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly more spacing
-
-	-- Font dropdown container
-	local fontContainer = CreateFrame("Frame", nil, content)
-	fontContainer:SetSize(400, 60)
-	fontContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
-
-	local fontLabel = fontContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	fontLabel:SetPoint("TOPLEFT", 0, 0)
-	fontLabel:SetText("Font")
-
-	local fonts = Config:GetFonts()
-	local currentFont = fonts[Config.fontFace] or "Default"
-
-	local fontDropdown = CreateFrame("Frame", "PeaversFontDropdown", fontContainer, "UIDropDownMenuTemplate")
-	fontDropdown:SetPoint("TOPLEFT", 0, -20)
-	UIDropDownMenu_SetWidth(fontDropdown, 345)
-	UIDropDownMenu_SetText(fontDropdown, currentFont)
-
-	UIDropDownMenu_Initialize(fontDropdown, function(self, level)
-		local info = UIDropDownMenu_CreateInfo()
-		for path, name in pairs(fonts) do
-			info.text = name
-			info.checked = (path == Config.fontFace)
-			info.func = function()
-				Config.fontFace = path
-				UIDropDownMenu_SetText(fontDropdown, name)
-				Config:Save()
-				if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-					PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-					PIL.Core:AdjustFrameHeight()
-				end
-			end
-			UIDropDownMenu_AddButton(info)
-		end
-	end)
-
-	yPos = yPos - 65 - 5  -- Extra space after dropdown
-
-	-- Font outline checkbox
-	local outlineCheckbox, newY = UI:CreateCheckbox(
-		content,
-		"PeaversFontOutlineCheckbox",
-		"Outlined Font",
-		subControlIndent,
-		yPos,
-		Config.fontOutline == "OUTLINE",
-		{ 1, 1, 1 },
-		function(self)
-			Config.fontOutline = self:GetChecked() and "OUTLINE" or ""
-			Config:Save()
-			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-				PIL.Core:AdjustFrameHeight()
-			end
-		end
-	)
-	yPos = newY - 3  -- Small spacing between checkboxes
-
-	-- Font shadow checkbox
-	local shadowCheckbox, newY = UI:CreateCheckbox(
-		content,
-		"PeaversFontShadowCheckbox",
-		"Font Shadow",
-		subControlIndent,
-		yPos,
-		Config.fontShadow,
-		{ 1, 1, 1 },
-		function(self)
-			Config.fontShadow = self:GetChecked()
-			Config:Save()
-			if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-				PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-				PIL.Core:AdjustFrameHeight()
-			end
-		end
-	)
-	yPos = newY - 12  -- More space before slider
-
-	-- Font size slider
-	local fontSizeContainer = CreateFrame("Frame", nil, content)
-	fontSizeContainer:SetSize(400, 50)
-	fontSizeContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
-
-	local fontSizeLabel = fontSizeContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	fontSizeLabel:SetPoint("TOPLEFT", 0, 0)
-	fontSizeLabel:SetText("Font Size: " .. Config.fontSize)
-
-	local fontSizeSlider = CreateFrame("Slider", "PeaversFontSizeSlider", fontSizeContainer, "OptionsSliderTemplate")
-	fontSizeSlider:SetPoint("TOPLEFT", 0, -20)
-	fontSizeSlider:SetWidth(400)
-	fontSizeSlider:SetMinMaxValues(6, 18)
-	fontSizeSlider:SetValueStep(1)
-	fontSizeSlider:SetValue(Config.fontSize)
-
-	-- Hide default slider text
-	local sliderName = fontSizeSlider:GetName()
-	if sliderName then
-		local lowText = _G[sliderName .. "Low"]
-		local highText = _G[sliderName .. "High"]
-		local valueText = _G[sliderName .. "Text"]
-
-		if lowText then
-			lowText:SetText("")
-		end
-		if highText then
-			highText:SetText("")
-		end
-		if valueText then
-			valueText:SetText("")
-		end
-	end
-
-	fontSizeSlider:SetScript("OnValueChanged", function(self, value)
-		local roundedValue = math.floor(value + 0.5)
-		fontSizeLabel:SetText("Font Size: " .. roundedValue)
-		Config.fontSize = roundedValue
-		Config:Save()
-		if PIL.BarManager and PIL.Core and PIL.Core.contentFrame then
-			PIL.BarManager:CreateBars(PIL.Core.contentFrame)
-			PIL.Core:AdjustFrameHeight()
-		end
-	end)
-
-	yPos = yPos - 55 - 10  -- Extra space after slider
-
-	-- Add a thin separator with more spacing
-	local _, newY = UI:CreateSeparator(content, baseSpacing + 15, yPos, 400)
-	yPos = newY - 15  -- More space after separator
-
-	-- Group 4: Bar texture
-	local barAppLabel, newY = UI:CreateLabel(content, "Bar Appearance:", controlIndent, yPos, "GameFontNormalSmall")
-	barAppLabel:SetTextColor(0.9, 0.9, 0.9)
-	yPos = newY - 8  -- Slightly more spacing
-
-	-- Texture dropdown container
-	local textureContainer = CreateFrame("Frame", nil, content)
-	textureContainer:SetSize(400, 60)
-	textureContainer:SetPoint("TOPLEFT", subControlIndent, yPos)
-
-	local textureLabel = textureContainer:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	textureLabel:SetPoint("TOPLEFT", 0, 0)
-	textureLabel:SetText("Bar Texture")
-
-	local textures = Config:GetBarTextures()
-	local currentTexture = textures[Config.barTexture] or "Default"
-
-	local textureDropdown = CreateFrame("Frame", "PeaversTextureDropdown", textureContainer, "UIDropDownMenuTemplate")
-	textureDropdown:SetPoint("TOPLEFT", 0, -20)
-	UIDropDownMenu_SetWidth(textureDropdown, 345)
-	UIDropDownMenu_SetText(textureDropdown, currentTexture)
-
-	UIDropDownMenu_Initialize(textureDropdown, function(self, level)
-		local info = UIDropDownMenu_CreateInfo()
-		for path, name in pairs(textures) do
-			info.text = name
-			info.checked = (path == Config.barTexture)
-			info.func = function()
-				Config.barTexture = path
-				UIDropDownMenu_SetText(textureDropdown, name)
-				Config:Save()
-				if PIL.BarManager then
-					PIL.BarManager:ResizeBars()
-				end
-			end
-			UIDropDownMenu_AddButton(info)
-		end
-	end)
-
-	yPos = yPos - 65 - 10  -- Extra space after dropdown
+	yPos = yPos - 65
 
 	return yPos
 end
