@@ -314,13 +314,16 @@ function StatBar:UpdateNameText()
 
 	-- If the name is too long, truncate it
 	local fullName = self.name
+
+	-- Set the full name first to get accurate width measurement
+	self.frame.nameText:SetText(fullName)
 	local nameWidth = self.frame.nameText:GetStringWidth()
 
-	if nameWidth > availableWidth and availableWidth > 0 then
+	-- Only truncate if the name is actually too long and we have space to display something
+	if nameWidth > availableWidth and availableWidth > 10 then
 		-- Truncate the name and add "..."
 		local truncatedName = fullName
 		local ellipsis = "..."
-		local ellipsisWidth = self.frame.nameText:GetStringWidth(ellipsis)
 
 		-- Start with the full name and gradually reduce it until it fits
 		while self.frame.nameText:GetStringWidth(truncatedName .. ellipsis) > availableWidth and #truncatedName > 0 do
