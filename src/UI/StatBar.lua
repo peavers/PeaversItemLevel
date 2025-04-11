@@ -292,9 +292,6 @@ end
 function StatBar:UpdateHeight()
     self.frame:SetHeight(PIL.Config.barHeight)
 
-    -- Force a UI update to ensure dimensions are correct
-    self.frame:UpdateLayout()
-
     -- Recalculate name truncation with the actual current dimensions
     self:UpdateNameText()
 end
