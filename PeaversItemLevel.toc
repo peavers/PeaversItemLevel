@@ -1,6 +1,6 @@
-## Interface: 110100, 110105
+## Interface: 110105
 
-## Title: PeaversItemLevel
+## Title: |cff3abdf7Peavers|rItemLevel
 ## Notes: Displays player item levels in a movable frame
 ## IconTexture: Interface\AddOns\PeaversItemLevel\src\Media\Icon.tga
 
@@ -9,6 +9,8 @@
 ## X-Curse-Project-ID: 1239246
 
 ## SavedVariables: PeaversItemLevelDB
+
+## Category-enUS: Peavers
 
 # Main
 src\Main.lua
