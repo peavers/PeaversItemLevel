@@ -69,9 +69,15 @@ function ConfigUI:InitializeOptions()
 	-- Update content height based on the last element position
 	content:SetHeight(math.abs(yPos) + 50)
 
-	-- Register with the Interface Options using the latest API
-	Config.categoryID = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
-	Settings.RegisterAddOnCategory(Config.categoryID)
+	-- Register with the Interface Options - standardized pattern
+	PIL.mainCategory = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+	PIL.mainCategory.ID = panel.name
+	Settings.RegisterAddOnCategory(PIL.mainCategory)
+
+	-- Add these callback functions
+	panel.OnRefresh = function() end
+	panel.OnCommit = function() end
+	panel.OnDefault = function() end
 
 	return panel
 end

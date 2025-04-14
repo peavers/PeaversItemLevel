@@ -32,6 +32,11 @@ frame:SetScript("OnEvent", function(self, event, arg1)
             PIL.Config.UI:InitializeOptions()
         end
 
+        -- Initialize support UI
+        if PIL.SupportUI and PIL.SupportUI.Initialize then
+            PIL.SupportUI:Initialize()
+        end
+
         -- Initialize core components
         PIL.Core:Initialize()
 
