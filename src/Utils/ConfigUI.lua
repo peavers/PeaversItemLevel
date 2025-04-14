@@ -3,7 +3,7 @@ local Config = PIL.Config
 local UI = PIL.UI
 local ConfigUI = {}
 
--- Initialize ConfigUI namespace
+-- Initialize ConfigUI.lua namespace
 PIL.Config.UI = ConfigUI
 
 -- Creates and initializes the options panel
@@ -27,14 +27,14 @@ function ConfigUI:InitializeOptions()
 	-- Create header and description
 	local title = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", baseSpacing, yPos)
-	title:SetText("Peavers Dynamic Stats")
+	title:SetText("Peavers Item Level")
 	title:SetTextColor(1, 0.84, 0) -- Gold color for main title
 	title:SetFont(title:GetFont(), 24, "OUTLINE")
 	yPos = yPos - (baseSpacing * goldenRatio)
 
 	local subtitle = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	subtitle:SetPoint("TOPLEFT", baseSpacing, yPos)
-	subtitle:SetText("Configuration options for the dynamic stats display")
+	subtitle:SetText("Configuration options for the item level display")
 	subtitle:SetFont(subtitle:GetFont(), 14)
 	yPos = yPos - sectionSpacing
 
@@ -891,7 +891,7 @@ function ConfigUI:OpenOptions()
 	Settings.OpenToCategory("PeaversItemLevel")
 end
 
--- Attach the ConfigUI to the Config namespace is already done at the top of the file
+-- Attach the ConfigUI.lua to the Config namespace is already done at the top of the file
 
 -- Handler for the /pil config command
 PIL.Config.OpenOptionsCommand = function()
