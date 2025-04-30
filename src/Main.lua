@@ -105,4 +105,6 @@ PeaversCommons.Events:Init(addonName, function()
     else
         PIL.Core.frame:Hide()
     end
-end)
+end, {
+	announceMessage = "Type /pil config for options."
+})
