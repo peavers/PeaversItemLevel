@@ -2,6 +2,9 @@ local addonName, PIL = ...
 local Core = {}
 PIL.Core = Core
 
+-- Init combat state
+Core.inCombat = false
+
 -- Sets up the addon's main frame and components
 function Core:Initialize()
 	-- Initialize player tracking
@@ -37,30 +40,8 @@ function Core:Initialize()
 
 	self:UpdateFrameLock()
 
- -- Determine initial visibility based on settings
+ 	-- Determine initial visibility based on settings
 	self:UpdateFrameVisibility()
-end
-
--- Registers all required events
-function Core:RegisterEvents()
-	local frame = CreateFrame("Frame")
-	self.eventFrame = frame
-
-	frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
-	frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	frame:RegisterEvent("INSPECT_READY")
-	frame:RegisterEvent("UNIT_NAME_UPDATE") -- Add this event
-
-	-- Set up event and update handlers
-	frame:SetScript("OnEvent", function(self, event, ...)
-		Core:OnEvent(event, ...)
-	end)
-	frame:SetScript("OnUpdate", function(self, elapsed)
-		Core:OnUpdate(elapsed)
-	end)
 end
 
 -- Recalculates frame height based on number of bars and title bar visibility
@@ -113,7 +94,7 @@ end
 function Core:UpdateFrameVisibility()
 	if not self.frame then return end
 
-	local inCombat = InCombatLockdown()
+	local inCombat = self.inCombat or InCombatLockdown()
 	local isInParty = IsInGroup() and not IsInRaid()
 	local isInRaid = IsInRaid()
 	local shouldShow = false
