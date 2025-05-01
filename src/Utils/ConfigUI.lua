@@ -1,10 +1,10 @@
 local _, PIL = ...
 local Config = PIL.Config
 local UI = PIL.UI
-local ConfigUI = {}
 
 -- Initialize ConfigUI.lua namespace
-PIL.Config.UI = ConfigUI
+local ConfigUI = {}
+PIL.ConfigUI = ConfigUI
 
 -- Creates and initializes the options panel
 function ConfigUI:InitializeOptions()
@@ -69,11 +69,9 @@ function ConfigUI:InitializeOptions()
 	-- Update content height based on the last element position
 	content:SetHeight(math.abs(yPos) + 50)
 
-	-- Register with the Interface Options - standardized pattern
-	PIL.mainCategory = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
-	PIL.mainCategory.ID = panel.name
-	Settings.RegisterAddOnCategory(PIL.mainCategory)
-
+	-- Let PeaversCommons handle category registration
+	-- The panel will be added as the first subcategory automatically
+	
 	-- Add these callback functions
 	panel.OnRefresh = function() end
 	panel.OnCommit = function() end
@@ -891,11 +889,14 @@ function ConfigUI:OpenOptions()
 	Settings.OpenToCategory("PeaversItemLevel")
 end
 
--- Attach the ConfigUI.lua to the Config namespace is already done at the top of the file
-
 -- Handler for the /pil config command
 PIL.Config.OpenOptionsCommand = function()
 	ConfigUI:OpenOptions()
+end
+
+-- Initialize the configuration UI when called
+function ConfigUI:Initialize()
+    self.panel = self:InitializeOptions()
 end
 
 return ConfigUI
