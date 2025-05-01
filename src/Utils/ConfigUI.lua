@@ -14,7 +14,7 @@ function ConfigUI:InitializeOptions()
 	end
 
 	local panel = CreateFrame("Frame")
-	panel.name = "PeaversItemLevel"
+	panel.name = "Settings"
 
 	local scrollFrame, content = UI:CreateScrollFrame(panel)
 	local yPos = 0
@@ -885,8 +885,13 @@ end
 
 -- Opens the configuration panel
 function ConfigUI:OpenOptions()
-	-- No need to initialize options panel here, it's already initialized in Main.lua
-	Settings.OpenToCategory("PeaversItemLevel")
+    -- Use the direct registration category and subcategory names
+    if PIL.directCategory and PIL.directSettingsCategory then
+        Settings.OpenToCategory(PIL.directSettingsCategory)
+    else
+        -- Fallback: try to open directly using the name
+        Settings.OpenToCategory("PeaversItemLevel")
+    end
 end
 
 -- Handler for the /pil config command

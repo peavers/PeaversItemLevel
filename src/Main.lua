@@ -22,14 +22,22 @@ PIL.version = getAddOnMetadata(addonName, "Version") or "1.0.5"
 PIL.addonName = addonName
 PIL.name = addonName
 
+-- Function to toggle the item level display
+function ToggleItemLevelDisplay()
+    if PIL.Core.frame:IsShown() then
+        PIL.Core.frame:Hide()
+    else
+        PIL.Core.frame:Show()
+    end
+end
+
+-- Make the function globally accessible
+_G.ToggleItemLevelDisplay = ToggleItemLevelDisplay
+
 -- Register slash commands
 PeaversCommons.SlashCommands:Register(addonName, "pil", {
     default = function()
-        if PIL.Core.frame:IsShown() then
-            PIL.Core.frame:Hide()
-        else
-            PIL.Core.frame:Show()
-        end
+        ToggleItemLevelDisplay()
     end,
 })
 
@@ -39,8 +47,8 @@ PeaversCommons.Events:Init(addonName, function()
     PIL.Config:Initialize()
 
     -- Initialize configuration UI
-    if PIL.Config.UI and PIL.Config.UI.InitializeOptions then
-        PIL.Config.UI:InitializeOptions()
+    if PIL.ConfigUI and PIL.ConfigUI.Initialize then
+        PIL.ConfigUI:Initialize()
     end
 
     -- Initialize support UI
@@ -108,7 +116,7 @@ PeaversCommons.Events:Init(addonName, function()
     
     -- DIRECT REGISTRATION APPROACH
     -- This ensures the addon appears in Options > Addons regardless of PeaversCommons logic
-    C_Timer.After(2, function()
+    C_Timer.After(3, function()
         -- Create the main panel (Support UI as landing page)
         local mainPanel = CreateFrame("Frame")
         mainPanel.name = "PeaversItemLevel"
@@ -171,6 +179,10 @@ PeaversCommons.Events:Init(addonName, function()
         if PIL.ConfigUI and PIL.ConfigUI.panel then
             -- Use existing ConfigUI panel
             settingsPanel = PIL.ConfigUI.panel
+            -- Print debug message to confirm we're using the proper panel
+            if PeaversCommons and PeaversCommons.Utils and PeaversCommons.Utils.Debug then
+                PeaversCommons.Utils.Debug(PIL, "Using ConfigUI panel with name: " .. (settingsPanel.name or "nil"))
+            end
         else
             -- Create a simple settings panel with commands
             settingsPanel = CreateFrame("Frame")
@@ -211,6 +223,14 @@ PeaversCommons.Events:Init(addonName, function()
             -- Store the category
             PIL.directCategory = category
             PIL.directPanel = mainPanel
+            
+            -- In case the ConfigUI panel wasn't properly initialized before, try to initialize it now
+            if not PIL.ConfigUI.panel and PIL.ConfigUI.InitializeOptions then
+                PIL.ConfigUI.panel = PIL.ConfigUI:InitializeOptions()
+                if PIL.ConfigUI.panel then
+                    settingsPanel = PIL.ConfigUI.panel
+                end
+            end
             
             -- Register settings panel as subcategory
             local settingsCategory = Settings.RegisterCanvasLayoutSubcategory(category, settingsPanel, settingsPanel.name)
