@@ -1,17 +1,12 @@
 ## Interface: 110105
-
 ## Title: |cff3abdf7Peavers|rItemLevel
 ## Notes: Displays player item levels in a movable frame
 ## IconTexture: Interface\AddOns\PeaversCommons\src\Media\Icon.tga
-
 ## Author: Peavers
 ## Version: 1.0.17
 ## X-Curse-Project-ID: 1239246
-
 ## Dependencies: PeaversCommons
-
 ## SavedVariables: PeaversItemLevelDB
-
 ## Category-enUS: Peavers
 
 # Main
