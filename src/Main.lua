@@ -55,6 +55,11 @@ PeaversCommons.Events:Init(addonName, function()
 	if PIL.SupportUI and PIL.SupportUI.Initialize then
 		PIL.SupportUI:Initialize()
 	end
+	
+	-- Initialize patrons support
+	if PIL.Patrons and PIL.Patrons.Initialize then
+		PIL.Patrons:Initialize()
+	end
 
 	-- Initialize core components
 	PIL.Core:Initialize()
