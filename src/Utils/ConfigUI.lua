@@ -6,6 +6,14 @@ local UI = PIL.UI
 local ConfigUI = {}
 PIL.ConfigUI = ConfigUI
 
+-- Access PeaversCommons utilities
+local PeaversCommons = _G.PeaversCommons
+-- Ensure PeaversCommons is loaded
+if not PeaversCommons then
+    print("|cffff0000Error:|r PeaversCommons not found. Please ensure it is installed and enabled.")
+    return
+end
+
 -- Creates and initializes the options panel
 function ConfigUI:InitializeOptions()
 	if not UI then
