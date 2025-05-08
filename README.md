@@ -4,6 +4,9 @@
 
 **A World of Warcraft addon that displays player item levels in a movable frame for quick assessment of your group or raid.**
 
+### New!
+Check out [peavers.io](https://peavers.io) and [bootstrap.peavers.io](https://bootstrap.peavers.io) for all my WoW addons and support.
+
 ## Overview
 
 PeaversItemLevel provides a clean and efficient way to see the item levels of everyone in your group or raid. The addon displays customizable bars that make it easy to identify which players might need gear upgrades or which are best equipped for challenging content.
