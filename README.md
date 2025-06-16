@@ -45,3 +45,5 @@ PeaversItemLevel provides a clean and efficient way to see the item levels of ev
 ## Support & Feedback
 
 If you encounter any issues or have suggestions for improvements, please submit them via [GitHub Issues](https://github.com/peavers/PeaversItemLevel/issues). Your feedback is valuable in enhancing the addon experience for all players.
+
+<!-- Workflow triggered: 2025-06-16T10:46:00.605353 -->
